@@ -4,4 +4,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="stocks">Stocks</string>
     <string name="favourite">Favourite</string>
+    <string name="search_hint">Find company or ticker</string>
+
+    <string name="popular_req">Popular requests</string>
+    <string name="you_ve_sear">You\'ve searched for this</string>
 </resources>

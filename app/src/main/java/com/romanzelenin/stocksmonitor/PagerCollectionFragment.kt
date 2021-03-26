@@ -1,11 +1,14 @@
 package com.romanzelenin.stocksmonitor
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -33,9 +36,7 @@ class PagerCollectionFragment : Fragment() {
         pagerCollectionAdapter = PagerCollectionAdapter(this)
 
         binding.apply {
-            (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
             pager.adapter = pagerCollectionAdapter
-
             val face = ResourcesCompat.getFont(requireContext(), R.font.montserrat_bold)
             val stocksTabText: TextView = TextView(context).apply {
                 id = android.R.id.text1
@@ -97,6 +98,32 @@ class PagerCollectionFragment : Fragment() {
 
                 override fun onTabReselected(tab: TabLayout.Tab?) = Unit
             })
+            includeSearchBar.appBarSearch.apply {
+                findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
+                    ContextCompat.getDrawable(context, R.drawable.close_icon)
+                )
+                findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                    setImageDrawable(
+                        ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_search_black_24dp
+                        )
+                    )
+                }
+                findViewById<TextView>(androidx.appcompat.R.id.search_src_text).apply {
+                    setHintTextColor(Color.BLACK)
+                    typeface = ResourcesCompat.getFont(context, R.font.montserrat)
+                }
+                inputType = EditorInfo.TYPE_NULL
+                setOnQueryTextFocusChangeListener { searchBar, hasFocus ->
+                    if (hasFocus) {
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.container, SearchFragment.newInstance())
+                            .commit()
+                    }
+                }
+            }
         }
     }
 
