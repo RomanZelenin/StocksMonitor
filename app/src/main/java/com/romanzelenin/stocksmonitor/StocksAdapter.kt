@@ -2,6 +2,7 @@ package com.romanzelenin.stocksmonitor
 
 import android.net.Uri
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,14 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.romanzelenin.stocksmonitor.model.FavouriteStock
 import com.romanzelenin.stocksmonitor.model.Stock
+import com.romanzelenin.stocksmonitor.model.TrendingStock
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.round
 
@@ -28,7 +33,7 @@ class StocksAdapter(
     override fun onBindViewHolder(holder: StocksRecyclerVH, position: Int) {
 
         val item = getItem(position)
-        if(item!=null){
+        if (item != null) {
             holder.apply {
                 itemView.background = null
                 logo.setImageDrawable(null)
@@ -65,14 +70,28 @@ class StocksAdapter(
                     }
                 }
 
-          /*      setStateStarBtn(star, item.favouriteTicker!!.favourite )
+               model.viewModelScope.launch {
+                    if(model.db.stockDao().getFavouriteStock(item.symbol)!=null){
+                        setStateStarBtn(star, true)
+                    }else{
+                        setStateStarBtn(star, false)
+                    }
+                }
+
                 star.setOnClickListener {
-                    setStateStarBtn(star, item.favouriteTicker!!.favourite )
-                    model.updateFavourite(
-                        item.stock.symbol,
-                        !item.favouriteTicker!!.favourite
-                    )
-                }*/
+                    model.viewModelScope.launch {
+                        if(model.db.stockDao().getFavouriteStock(item.symbol)!=null){
+                            setStateStarBtn(star, false)
+                            model.db.stockDao()
+                                .removeFavouriteStock(listOf(FavouriteStock(item.symbol)))
+                        }else{
+                            setStateStarBtn(star, true)
+                            model.db.stockDao()
+                                .insertFavouriteStock(listOf(FavouriteStock(item.symbol)))
+                        }
+                        model.db.stockDao().updateAllTrendingStocks(listOf(TrendingStock(item.symbol)))
+                    }
+                }
 
                 val currencySymbol = model.countryToCurrency.value[item.currency]
                 stockPrice.text =
@@ -95,7 +114,11 @@ class StocksAdapter(
                     }
                     else -> {
                         sb.append("$currencySymbol${dailyPrice}(${percent}%)")
-                        ResourcesCompat.getColor(holder.itemView.resources, R.color.light_gray, null)
+                        ResourcesCompat.getColor(
+                            holder.itemView.resources,
+                            R.color.light_gray,
+                            null
+                        )
                     }
                 }
                 dailyPriceChange.apply {

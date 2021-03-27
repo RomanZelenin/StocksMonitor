@@ -8,14 +8,15 @@ import androidx.room.withTransaction
 import com.romanzelenin.stocksmonitor.db.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.model.RemoteKey
 import com.romanzelenin.stocksmonitor.model.Stock
+import com.romanzelenin.stocksmonitor.model.TrendingStock
 import java.io.IOException
 
 @ExperimentalPagingApi
 class StocksRemoteMediator(val service: FinService, val db: MonitorStocksDatabase) :
-    RemoteMediator<Int, Stock>() {
+    RemoteMediator<Int, TrendingStock>() {
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, Stock>
+        state: PagingState<Int, TrendingStock>
     ): MediatorResult {
 
         val page = when (loadType) {
@@ -45,7 +46,7 @@ class StocksRemoteMediator(val service: FinService, val db: MonitorStocksDatabas
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     db.getRemoteKeyDao().clearRemoteKey()
-                    db.stockDao().clearStocks()
+                    db.stockDao().clearTrendingStocks()
                 }
 
                 val prevKey = if (page == 1) null else page - state.config.pageSize
@@ -54,6 +55,7 @@ class StocksRemoteMediator(val service: FinService, val db: MonitorStocksDatabas
                     RemoteKey(it.symbol, prevKey, nextKey)
                 }
                 db.getRemoteKeyDao().insertAll(keys)
+                db.stockDao().insertAllTrendingStocks(stocks.map { TrendingStock(it.symbol) })
                 db.stockDao().insertAllStocks(stocks)
             }
             return MediatorResult.Success(endOfPaginationReached = stocks.isEmpty())

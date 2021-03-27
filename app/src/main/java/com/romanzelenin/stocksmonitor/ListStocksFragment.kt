@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.map
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.romanzelenin.stocksmonitor.PagerCollectionAdapter.Companion.ARG_TAB_NAME
@@ -34,7 +35,7 @@ class ListStocksFragment : Fragment() {
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        stocksAdapter = StocksAdapter(viewModel,object : DiffUtil.ItemCallback<Stock>() {
+        stocksAdapter = StocksAdapter(viewModel, object : DiffUtil.ItemCallback<Stock>() {
             override fun areItemsTheSame(
                 oldItem: Stock,
                 newItem: Stock
@@ -57,10 +58,24 @@ class ListStocksFragment : Fragment() {
             if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.STOCKS_TAB) {
                 lifecycleScope.launch {
                     viewModel.popularStocks.collectLatest {
-                        stocksAdapter.submitData(it)
+                        stocksAdapter.submitData(it.map {
+                            val favourite =
+                                viewModel.db.stockDao()
+                                        .getFavouriteStock(it.symbol) != null
+                            viewModel.db.stockDao().getStock(it.symbol)!!.apply {
+                                isFavourite = favourite
+                            }
+                        })
                     }
                 }
-            } else if(getInt(ARG_TAB_NAME) == PagerCollectionAdapter.FAVOURITE_TAB) {
+            } else if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.FAVOURITE_TAB) {
+                lifecycleScope.launch {
+                    viewModel.favouriteStocks.collectLatest {
+                            stocksAdapter.submitData(it.map {
+                                viewModel.db.stockDao().getStock(it.symbol)!!
+                            })
+                    }
+                }
 
             }
         }

@@ -9,7 +9,7 @@ import androidx.room.Room
 import com.romanzelenin.stocksmonitor.db.MonitorStocksDatabase
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
-    private val db =
+    val db =
         Room.inMemoryDatabaseBuilder(application, MonitorStocksDatabase::class.java).build()
     private val service = FinService.getInstance(application)
 
@@ -28,6 +28,15 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         config = PagingConfig(pageSize = 25),
         remoteMediator = StocksRemoteMediator(service, db),
     ) {
-        db.stockDao().getAllStocks()
+        db.stockDao().getAllTrendingStocks()
+    }.flow
+
+
+    @ExperimentalPagingApi
+    val favouriteStocks = Pager(
+        config = PagingConfig(pageSize = 25),
+        ///remoteMediator = StocksRemoteMediator(service, db),
+    ) {
+        db.stockDao().getAllFavouriteStock()
     }.flow
 }
