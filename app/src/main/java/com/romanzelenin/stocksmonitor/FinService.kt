@@ -2,10 +2,7 @@ package com.romanzelenin.stocksmonitor
 
 import android.content.Context
 import android.util.Log
-import com.romanzelenin.stocksmonitor.model.CompanyProfile
-import com.romanzelenin.stocksmonitor.model.MostWatched
-import com.romanzelenin.stocksmonitor.model.Stock
-import com.romanzelenin.stocksmonitor.model.StockCollectionInMarket
+import com.romanzelenin.stocksmonitor.model.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
@@ -13,8 +10,11 @@ import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.lang.NullPointerException
 
 class FinService(context: Context) {
     private val className = FinService::class.java.simpleName
@@ -37,15 +37,70 @@ class FinService(context: Context) {
                 Log.d(className, e.message!!)
                 if (e.response.status == HttpStatusCode.TooManyRequests) {
                     delay(timeRepeatRequestMills)
+                } else {
+                    break
                 }
             } catch (e: ServerResponseException) {
                 Log.d(className, e.message!!)
+                break
+            } catch (e: NullPointerException) {
+                Log.d(className, e.toString())
                 break
             }
             counter--
             Log.d(className, "counter $counter")
         }
         return result
+    }
+
+    suspend fun symLookup(query: String): List<Stock?> {
+
+        val respond =
+            client.get<SymLookupResp>("${finhub_host}search?q=$query&token=${finhub_token}")
+        var stock: Stock? = null
+        if (respond.count == 0) return emptyList()
+
+        return respond.result.map {
+            val quote = getQuote(it.symbol)
+            if (quote != null) {
+                val companyProfile = getCompanyProfile(it.symbol)
+
+                if (companyProfile?.ticker != null) {
+                    val logoImg = File(pathToImgDir + File.separator + it.symbol + ".png")
+                    if (!logoImg.exists()) {
+                        loadLogo(it.symbol)?.also { logo ->
+                            logoImg.also {
+                                it.writeBytes(logo)
+                            }
+                        }
+                    }
+
+                    stock = Stock(
+                        it.symbol,
+                        companyProfile!!.currency,
+                        quote.c,
+                        quote.pc,
+                        0.0,
+                        it.description,
+                        null,
+                        false
+                    )
+                    if (logoImg.exists())
+                        stock!!.imgSrc = logoImg.absolutePath
+                    Log.d(className, "loaded stock: $stock")
+                }
+            }
+            stock
+        }
+    }
+
+    private suspend fun getQuote(symbol: String): Quote? {
+        return repeatedRequest(1, 0) {
+            val respond =
+                client.get<Quote>("${finhub_host}quote?symbol=${symbol}&token=${finhub_token}")
+            Log.d(className, "$respond")
+            respond
+        }
     }
 
 
@@ -58,7 +113,7 @@ class FinService(context: Context) {
     }
 
     private suspend fun loadLogo(symbol: String): ByteArray? {
-        return repeatedRequest(5, 7000) {
+        return repeatedRequest(1, 0) {
             client.run {
                 val profile = getCompanyProfile(symbol)
                 var buffer: ByteArray? = null
@@ -78,8 +133,8 @@ class FinService(context: Context) {
         }
     }
 
-    suspend fun getCompanyProfile(symbol: String): CompanyProfile? {
-        return repeatedRequest(5, 7000L) {
+    private suspend fun getCompanyProfile(symbol: String): CompanyProfile? {
+        return repeatedRequest(1, 0) {
             client.get<CompanyProfile>("${finhub_host}stock/profile2?symbol=${symbol}&token=$finhub_token")
                 .also {
                     Log.d(className, it.toString())
