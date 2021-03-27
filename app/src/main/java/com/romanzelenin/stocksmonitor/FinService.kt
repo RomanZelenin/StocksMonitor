@@ -3,6 +3,7 @@ package com.romanzelenin.stocksmonitor
 import android.content.Context
 import android.util.Log
 import com.romanzelenin.stocksmonitor.model.CompanyProfile
+import com.romanzelenin.stocksmonitor.model.MostWatched
 import com.romanzelenin.stocksmonitor.model.Stock
 import com.romanzelenin.stocksmonitor.model.StockCollectionInMarket
 import io.ktor.client.*
@@ -45,6 +46,15 @@ class FinService(context: Context) {
             Log.d(className, "counter $counter")
         }
         return result
+    }
+
+
+    suspend fun popularRequests(amount: Int = 20): List<String> {
+        return client.run {
+            get<List<MostWatched>>("${mboum_host}tr/trending?apikey=${mboum_token}")[0].quotes
+                .take(amount)
+                .mapNotNull { getCompanyProfile(it)?.name }
+        }
     }
 
     private suspend fun loadLogo(symbol: String): ByteArray? {

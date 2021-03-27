@@ -13,6 +13,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchBinding
 
 
@@ -62,11 +65,28 @@ class SearchFragment : Fragment() {
                 }
             }
         }
+
+        binding.apply {
+            val popularReqAdapter = initRecycler(recyclerPopularReq)
+            viewModel.getPopularRequests(flag).observe(viewLifecycleOwner, {
+                popularReqAdapter.dataSet = it
+                recyclerPopularReq.adapter?.notifyDataSetChanged()
+            })
+            flag = true
+        }
+
+
     }
 
-
+    private fun initRecycler(recyclerView: RecyclerView):PopularReqAdapter{
+        val adapter =  PopularReqAdapter(listOf())
+        recyclerView.layoutManager =  StaggeredGridLayoutManager(2, LinearLayoutManager.HORIZONTAL)
+        recyclerView.adapter = adapter
+        return adapter
+    }
 
     companion object {
+        var flag = false
         @JvmStatic
         fun newInstance() =
             SearchFragment()

@@ -4,17 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.romanzelenin.stocksmonitor.model.FavouriteStock
-import com.romanzelenin.stocksmonitor.model.RemoteKey
-import com.romanzelenin.stocksmonitor.model.Stock
-import com.romanzelenin.stocksmonitor.model.TrendingStock
+import com.romanzelenin.stocksmonitor.model.*
 
-@Database(entities = [Stock::class, RemoteKey::class, TrendingStock::class, FavouriteStock::class], version = 1)
+@Database(entities = [Stock::class, RemoteKey::class, TrendingStock::class, FavouriteStock::class, PopularRequest::class], version = 1)
 abstract class MonitorStocksDatabase : RoomDatabase() {
 
     abstract fun stockDao(): StockDao
 
     abstract fun getRemoteKeyDao(): RemoteKeyDao
+
+    abstract fun getPopularRequestDao(): PopularRequestDao
 
     companion object {
 
