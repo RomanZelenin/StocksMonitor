@@ -1,14 +1,16 @@
 package com.romanzelenin.stocksmonitor.model
 
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+@Entity(tableName = "Stocks")
 data class Stock(
-    val symbol: String,
+    @PrimaryKey  val symbol: String,
     val currency: String,
     val regularMarketPrice: Double,
     val regularMarketPreviousClose: Double,
     val regularMarketChangePercent: Double,
     val shortName: String,
     var imgSrc: String?,
-    var isFavourite: Boolean?
+    //var isFavourite: Boolean?
 )
