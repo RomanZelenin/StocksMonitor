@@ -8,21 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchBinding
-import com.romanzelenin.stocksmonitor.model.Stock
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class SearchFragment : Fragment() {
@@ -32,16 +26,19 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        countBackStack = requireActivity().supportFragmentManager.backStackEntryCount
         _binding = FragmentSearchBinding.inflate(inflater)
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         binding.includeSearchBar.appBarSearch.apply {
             setOnQueryTextFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
@@ -55,16 +52,15 @@ class SearchFragment : Fragment() {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     viewModel.saveSearchRequest(query.trim())
 
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, SearchResultFragment.newInstance(query.trim()))
+                        .commit()
 
-                    lifecycleScope.launch {
+                   /* lifecycleScope.launch {
                         var stocks = viewModel.lookupStock(query.trim())
                         if(stocks.isNotEmpty())
                         Toast.makeText(context, stocks[0].symbol, Toast.LENGTH_LONG).show()
-                    }
-                    /* stocks?.let {
-                         Toast.makeText(context, it[0].symbol , Toast.LENGTH_LONG).show()
-                     }*/
-
+                    }*/
                     return true
                 }
 
@@ -113,6 +109,8 @@ class SearchFragment : Fragment() {
 
     }
 
+
+
     private fun initRecycler(recyclerView: RecyclerView): PopularReqAdapter {
         val adapter = PopularReqAdapter(listOf())
         recyclerView.layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.HORIZONTAL)
@@ -121,7 +119,7 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-
+       var countBackStack:Int =0
         @JvmStatic
         fun newInstance() =
             SearchFragment()

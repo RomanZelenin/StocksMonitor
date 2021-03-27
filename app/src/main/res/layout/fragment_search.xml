@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,13 +18,15 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
 
             <include
                 android:id="@+id/include_search_bar"
                 layout="@layout/search_bar"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="0dp" />
+                tools:layout_editor_absoluteX="0dp"
+                tools:visibility="visible" />
         </FrameLayout>
 
         <TextView
@@ -36,7 +39,8 @@
             android:text="@string/you_ve_sear"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_popular_req" />
+            app:layout_constraintTop_toBottomOf="@+id/recycler_popular_req"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/popular_req"
@@ -48,7 +52,8 @@
             android:text="@string/popular_req"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_popular_req"
@@ -57,7 +62,8 @@
             android:layout_marginTop="11dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/popular_req" />
+            app:layout_constraintTop_toBottomOf="@+id/popular_req"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_you_ve_sear"
@@ -66,7 +72,8 @@
             android:layout_marginTop="11dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/you_ve_sear" />
+            app:layout_constraintTop_toBottomOf="@+id/you_ve_sear"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
