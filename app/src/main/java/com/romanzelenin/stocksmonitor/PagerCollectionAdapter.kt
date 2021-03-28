@@ -3,6 +3,7 @@ package com.romanzelenin.stocksmonitor
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.romanzelenin.stocksmonitor.ui.ListStocksFragment
 
 class PagerCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     companion object{

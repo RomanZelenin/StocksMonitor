@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui
 
 import android.graphics.Color
 import android.os.Bundle
@@ -14,6 +14,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.romanzelenin.stocksmonitor.PagerCollectionAdapter
+import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.FragmentPagerCollectionBinding
 
 
@@ -98,7 +100,7 @@ class PagerCollectionFragment : Fragment() {
 
                 override fun onTabReselected(tab: TabLayout.Tab?) = Unit
             })
-            includeSearchBar.appBarSearch.apply {
+        /*    includeSearchBar.appBarSearch.apply {
                 findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
                     ContextCompat.getDrawable(context, R.drawable.close_icon)
                 )
@@ -123,7 +125,7 @@ class PagerCollectionFragment : Fragment() {
                             .commit()
                     }
                 }
-            }
+            }*/
         }
     }
 

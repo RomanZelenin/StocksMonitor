@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.romanzelenin.stocksmonitor.model.PopularRequest
 
-class PopularReqAdapter(var dataSet: List<PopularRequest>) :
+class PopularReqAdapter(var dataSet: List<String>) :
     RecyclerView.Adapter<PopularReqAdapter.PopularReqVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularReqVH {
@@ -17,10 +17,12 @@ class PopularReqAdapter(var dataSet: List<PopularRequest>) :
 
     override fun onBindViewHolder(holder: PopularReqVH, position: Int) {
         holder.apply {
-            suggestion.text = dataSet[position].name
+            suggestion.text = dataSet[position]
             suggestion.setOnClickListener {
-                //Todo: add search
-                Toast.makeText(it.context,suggestion.text, Toast.LENGTH_SHORT).show()
+                ((it.context) as MainActivity).supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, SearchResultFragment.newInstance(suggestion.text.toString()))
+                    .commit()
+               // Toast.makeText(it.context,suggestion.text, Toast.LENGTH_SHORT).show()
             }
         }
     }

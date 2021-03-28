@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.db
+package com.romanzelenin.stocksmonitor.db.localdata
 
 import androidx.paging.PagingSource
 import androidx.room.*
@@ -21,9 +21,6 @@ interface StockDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllTrendingStocks(stocks: List<TrendingStock>)
 
-    @Update
-    suspend fun updateAllTrendingStocks(stocks: List<TrendingStock>)
-
     @Query("Delete From TrendingStocks")
     suspend fun clearTrendingStocks()
 
@@ -35,11 +32,9 @@ interface StockDao {
     fun getAllFavouriteStock(): PagingSource<Int, FavouriteStock>
 
     @Insert
-    @Transaction
-    suspend fun insertFavouriteStock(stocks: List<FavouriteStock>)
+    suspend fun insertFavouriteStock(stock: FavouriteStock)
 
     @Delete
-    @Transaction
-    suspend fun removeFavouriteStock(stocks: List<FavouriteStock>)
+    suspend fun removeFavouriteStock(stock: FavouriteStock)
 
 }

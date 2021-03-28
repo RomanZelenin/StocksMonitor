@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.db
+package com.romanzelenin.stocksmonitor.db.localdata
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -13,7 +13,7 @@ interface RemoteKeyDao {
     suspend fun insertAll(keys: List<RemoteKey>)
 
     @Query("Select * From RemoteKey Where stock_id like :stock")
-    suspend fun getRemoteKeys(stock: String): RemoteKey?
+    suspend fun getRemoteKey(stock: String): RemoteKey?
 
     @Query("Delete From RemoteKey")
     suspend fun clearRemoteKey()

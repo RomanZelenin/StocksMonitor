@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui
 
 import android.content.Context
 import android.graphics.Color
@@ -16,6 +16,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.romanzelenin.stocksmonitor.MainActivityViewModel
+import com.romanzelenin.stocksmonitor.PopularReqAdapter
+import com.romanzelenin.stocksmonitor.R
+import com.romanzelenin.stocksmonitor.SearchResultFragment
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchBinding
 
 
@@ -53,14 +57,11 @@ class SearchFragment : Fragment() {
                     viewModel.saveSearchRequest(query.trim())
 
                     requireActivity().supportFragmentManager.beginTransaction()
+                        .addToBackStack(null)
                         .replace(R.id.container, SearchResultFragment.newInstance(query.trim()))
                         .commit()
 
-                   /* lifecycleScope.launch {
-                        var stocks = viewModel.lookupStock(query.trim())
-                        if(stocks.isNotEmpty())
-                        Toast.makeText(context, stocks[0].symbol, Toast.LENGTH_LONG).show()
-                    }*/
+
                     return true
                 }
 
@@ -94,22 +95,21 @@ class SearchFragment : Fragment() {
         }
 
         binding.apply {
-            val popularReqAdapter = initRecycler(recyclerPopularReq)
-            viewModel.getPopularRequests(false).observe(viewLifecycleOwner, {
-                popularReqAdapter.dataSet = it
-                recyclerPopularReq.adapter?.notifyDataSetChanged()
-            })
-            val youVeSearchAdapter = initRecycler(recyclerYouVeSear)
-            viewModel.searchedRequests.observe(viewLifecycleOwner, {
-                youVeSearchAdapter.dataSet = it.toList()
-                recyclerYouVeSear.adapter?.notifyDataSetChanged()
-            })
+                val popularReqAdapter = initRecycler(recyclerPopularReq)
+                viewModel.getPopularRequests(false).observe(viewLifecycleOwner, {
+                    popularReqAdapter.dataSet = it
+                    recyclerPopularReq.adapter?.notifyDataSetChanged()
+                })
+                val youVeSearchAdapter = initRecycler(recyclerYouVeSear)
+                viewModel.searchedRequests.observe(viewLifecycleOwner, {
+                    youVeSearchAdapter.dataSet = it
+                    recyclerYouVeSear.adapter?.notifyDataSetChanged()
+                })
+
         }
 
 
     }
-
-
 
     private fun initRecycler(recyclerView: RecyclerView): PopularReqAdapter {
         val adapter = PopularReqAdapter(listOf())

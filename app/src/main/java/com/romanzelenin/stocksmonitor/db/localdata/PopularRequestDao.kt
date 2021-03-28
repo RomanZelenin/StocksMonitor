@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.db
+package com.romanzelenin.stocksmonitor.db.localdata
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -2,7 +2,6 @@ package com.romanzelenin.stocksmonitor
 
 import android.net.Uri
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.romanzelenin.stocksmonitor.model.FavouriteStock
 import com.romanzelenin.stocksmonitor.model.Stock
-import com.romanzelenin.stocksmonitor.model.TrendingStock
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.round
@@ -32,17 +29,30 @@ class StocksAdapter(
 
     override fun onBindViewHolder(holder: StocksRecyclerVH, position: Int) {
 
-        val item = getItem(position)
-        if (item != null) {
-            holder.apply {
-                itemView.background = null
-                logo.setImageDrawable(null)
-
-                if (position % 2 == 0) itemView.background = ResourcesCompat.getDrawable(
+        holder.apply {
+            itemView.background = null
+            if (position % 2 == 0) {
+                itemView.background = ResourcesCompat.getDrawable(
                     holder.itemView.resources,
                     R.drawable.snippet_shape,
                     null
                 )
+            }
+            logo.setImageDrawable(null)
+            star.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                    itemView.resources,
+                    android.R.drawable.btn_star_big_off,
+                    null
+                )
+            )
+            ticker.text = ""
+            companyName.text = ""
+        }
+
+        val item = getItem(position)
+        if (item != null) {
+            holder.apply {
 
                 if (item.imgSrc != null)
                     logo.setImageURI(Uri.parse(item.imgSrc))
@@ -70,30 +80,28 @@ class StocksAdapter(
                     }
                 }
 
-               model.viewModelScope.launch {
-                    if(model.db.stockDao().getFavouriteStock(item.symbol)!=null){
+                model.viewModelScope.launch {
+                    if (model.isFavouriteStock(item.symbol)) {
                         setStateStarBtn(star, true)
-                    }else{
+                    } else {
                         setStateStarBtn(star, false)
                     }
                 }
 
                 star.setOnClickListener {
                     model.viewModelScope.launch {
-                        if(model.db.stockDao().getFavouriteStock(item.symbol)!=null){
+                        if (model.isFavouriteStock(item.symbol)) {
                             setStateStarBtn(star, false)
-                            model.db.stockDao()
-                                .removeFavouriteStock(listOf(FavouriteStock(item.symbol)))
-                        }else{
+                            model.removeFromFavourite(item.symbol)
+                        } else {
                             setStateStarBtn(star, true)
-                            model.db.stockDao()
-                                .insertFavouriteStock(listOf(FavouriteStock(item.symbol)))
+                            model.addToFavourite(item.symbol)
                         }
-                        model.db.stockDao().updateAllTrendingStocks(listOf(TrendingStock(item.symbol)))
+                        model.refreshListTrendingStocks()
                     }
                 }
 
-                val currencySymbol = model.countryToCurrency.value[item.currency]
+                val currencySymbol = model.getUnicodeSymbolCurrency(item.currency)
                 stockPrice.text =
                     "$currencySymbol${round(item.regularMarketPrice * 100) / 100}"
 
@@ -126,6 +134,8 @@ class StocksAdapter(
                     setTextColor(color)
                 }
             }
+        } else {
+
         }
 
     }

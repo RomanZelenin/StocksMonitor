@@ -4,15 +4,15 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import androidx.room.withTransaction
-import com.romanzelenin.stocksmonitor.db.MonitorStocksDatabase
+import com.romanzelenin.stocksmonitor.db.Repository
+import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.RemoteKey
-import com.romanzelenin.stocksmonitor.model.Stock
 import com.romanzelenin.stocksmonitor.model.TrendingStock
 import java.io.IOException
+import java.nio.channels.UnresolvedAddressException
 
 @ExperimentalPagingApi
-class StocksRemoteMediator(val service: FinService, val db: MonitorStocksDatabase) :
+class StocksRemoteMediator(private val service: FinService, val db: Repository) :
     RemoteMediator<Int, TrendingStock>() {
     override suspend fun load(
         loadType: LoadType,
@@ -23,30 +23,29 @@ class StocksRemoteMediator(val service: FinService, val db: MonitorStocksDatabas
             LoadType.REFRESH -> {
                 state.anchorPosition?.run {
                     state.closestItemToPosition(this)?.symbol?.let {
-                        db.getRemoteKeyDao().getRemoteKeys(it)?.nextKey?.minus(1)
+                        db.getRemoteKey(it)?.nextKey?.minus(1)
                     }
                 } ?: 1
             }
             LoadType.PREPEND -> {
                 state.firstItemOrNull()?.symbol?.let {
-                    db.getRemoteKeyDao().getRemoteKeys(it)?.prevKey
+                    db.getRemoteKey(it)?.prevKey
                 }
                     ?: return MediatorResult.Success(endOfPaginationReached = false)
             }
             LoadType.APPEND -> {
                 state.lastItemOrNull()?.symbol?.let {
-                    db.getRemoteKeyDao().getRemoteKeys(it)?.nextKey
+                    db.getRemoteKey(it)?.nextKey
                 }
                     ?: return MediatorResult.Success(endOfPaginationReached = false)
             }
         }
-
         try {
-            val stocks = service.mostActiveStocks(page,false)
-            db.withTransaction {
+            val stocks = service.mostActiveStocks(page)
+
+            if (stocks != null) {
                 if (loadType == LoadType.REFRESH) {
-                    db.getRemoteKeyDao().clearRemoteKey()
-                    db.stockDao().clearTrendingStocks()
+                    db.clearListTrendingStocks()
                 }
 
                 val prevKey = if (page == 1) null else page - state.config.pageSize
@@ -54,11 +53,10 @@ class StocksRemoteMediator(val service: FinService, val db: MonitorStocksDatabas
                 val keys = stocks.map {
                     RemoteKey(it.symbol, prevKey, nextKey)
                 }
-                db.getRemoteKeyDao().insertAll(keys)
-                db.stockDao().insertAllTrendingStocks(stocks.map { TrendingStock(it.symbol) })
-                db.stockDao().insertAllStocks(stocks)
+                db.addTrendingStocksWithRemoteKeys(stocks, keys)
+                return MediatorResult.Success(endOfPaginationReached = stocks.isEmpty())
             }
-            return MediatorResult.Success(endOfPaginationReached = stocks.isEmpty())
+            return MediatorResult.Error(IllegalArgumentException())
         } catch (e: IOException) {
             return MediatorResult.Error(e)
         }
