@@ -60,6 +60,7 @@ class SearchFragment : Fragment() {
                 requireActivity().onBackPressed()
             }
         }
+
         //How to return
        // if (savedInstanceState == null) {
             binding.apply {

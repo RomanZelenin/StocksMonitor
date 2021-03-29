@@ -59,6 +59,10 @@ class MainActivityViewModel(application: Application, val repository: Repository
         repository.saveSearchRequest(query)
     }
 
+    fun flushSavedRequestFromMemoryToDisk(){
+        repository.flushSavedRequestFromMemoryToDisk()
+    }
+
     var query: String? = null
     @ExperimentalPagingApi
     val searchStocks = Pager(

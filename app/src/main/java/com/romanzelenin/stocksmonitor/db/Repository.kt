@@ -1,9 +1,10 @@
 package com.romanzelenin.stocksmonitor.db
 
 import android.content.Context
-import android.util.Log
-import androidx.arch.core.util.Function
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.map
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -14,15 +15,17 @@ import com.romanzelenin.stocksmonitor.StocksRemoteMediator
 import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import java.io.File
-import kotlin.concurrent.thread
-import kotlin.coroutines.coroutineContext
+import kotlin.collections.ArrayDeque
+import kotlin.collections.List
+import kotlin.collections.distinctBy
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
-class Repository(context: Context) {
+class Repository(private val context: Context) {
     private val remoteSource = FinService.getInstance(context)
     private val localSource = MonitorStocksDatabase.getInstance(context)
 
@@ -52,20 +55,6 @@ class Repository(context: Context) {
         }
     }
 
-
-    /*     flow {
-             val resp = localSource.getPopularRequestDao().getAllPopularRequest()
-                 .map { it.map { it.name } }
-             emit(resp)
-             while (true) {
-                 localSource.getPopularRequestDao()
-                     .insertAll(remoteSource.popularRequests().map { PopularRequest(it) })
-                 emit(resp)
-             }
-         }
-
-
-     }*/
 
     val countryToCurrency = lazy {
         val symbols = mutableMapOf<String, String>()
@@ -152,6 +141,19 @@ class Repository(context: Context) {
                 _searchedRequests.addFirst(request.name)
             }
             searchedRequests.postValue(_searchedRequests)
+        }
+    }
+    fun flushSavedRequestFromMemoryToDisk(){
+        File(context.filesDir.absolutePath + File.pathSeparator + "you_ve_search.txt").apply {
+            delete()
+            val buffer = bufferedWriter()
+            _searchedRequests.forEachIndexed { index, item->
+                buffer.append(item)
+                if (index < _searchedRequests.size-1){
+                    buffer.appendLine()
+                }
+            }
+            buffer.flush()
         }
     }
 }

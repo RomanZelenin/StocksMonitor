@@ -2,23 +2,20 @@ package com.romanzelenin.stocksmonitor
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import com.romanzelenin.stocksmonitor.databinding.ActivityMainBinding
 import com.romanzelenin.stocksmonitor.db.Repository
-import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.ui.PagerCollectionFragment
 import com.romanzelenin.stocksmonitor.ui.SearchFragment
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,6 +51,16 @@ class MainActivity : AppCompatActivity() {
                 typeface = ResourcesCompat.getFont(context, R.font.montserrat)
             }
 
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    viewModel.saveSearchRequest(query)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
 
             setOnQueryTextFocusChangeListener { searchBar, hasFocus ->
                 if (hasFocus) {
@@ -94,5 +101,10 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.flushSavedRequestFromMemoryToDisk()
     }
 }
