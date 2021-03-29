@@ -9,6 +9,9 @@ import com.romanzelenin.stocksmonitor.model.TrendingStock
 @Dao
 interface StockDao {
 
+    @Query("Select * From Stocks Where symbol like '%' || :ticket || '%' or shortName like '%' || :companyName ||'%'")
+    suspend fun searchStock(ticket: String, companyName:String):List<Stock>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllStocks(stocks: List<Stock>)
 
