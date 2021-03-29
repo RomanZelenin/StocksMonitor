@@ -44,19 +44,8 @@ class SearchFragment : Fragment() {
 
         requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
             setOnClickListener {
-                setImageDrawable(
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_search_black_24dp
-                    )
-                )
                 requireActivity().findViewById<TextView>(androidx.appcompat.R.id.search_src_text)
                     .clearFocus()
-                //Hide soft keyboard
-                val imm =
-                    view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
-                //--------
                 requireActivity().onBackPressed()
             }
         }
