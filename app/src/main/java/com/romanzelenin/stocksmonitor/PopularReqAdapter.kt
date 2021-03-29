@@ -19,9 +19,9 @@ class PopularReqAdapter(var dataSet: List<String>) :
             suggestion.text = dataSet[position]
             suggestion.setOnClickListener {
                 ((it.context) as MainActivity).supportFragmentManager.beginTransaction()
+                    .addToBackStack(null)
                     .replace(R.id.container, SearchResultFragment.newInstance(suggestion.text.toString()))
                     .commit()
-               // Toast.makeText(it.context,suggestion.text, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -29,7 +29,6 @@ class PopularReqAdapter(var dataSet: List<String>) :
     override fun getItemCount(): Int {
         return dataSet.size
     }
-
 
     class PopularReqVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val suggestion: TextView = itemView.findViewById(R.id.bubble)

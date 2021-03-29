@@ -5,13 +5,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
-import com.romanzelenin.stocksmonitor.ui.StocksPagigData
 
-class MainActivityViewModel(application: Application, val repository: Repository) :
+class MainActivityViewModel(application: Application, private val repository: Repository) :
     AndroidViewModel(application) {
 
     private val TAG = MainActivityViewModel::class.java.name
@@ -57,19 +54,16 @@ class MainActivityViewModel(application: Application, val repository: Repository
     }
 
     fun saveSearchRequest(query: String){
-        repository.saveSearchRequest(query)
+        repository.saveSearchRequest(query.trim())
     }
 
     fun flushSavedRequestFromMemoryToDisk(){
         repository.flushSavedRequestFromMemoryToDisk()
     }
 
-    var query: String? = null
-    @ExperimentalPagingApi
-    val searchStocks = Pager(
-        config = PagingConfig(pageSize = 1),
-        ///remoteMediator = StocksRemoteMediator(service, db),
-    ) {
-        StocksPagigData(this)
-    }.flow
+
+    fun searchStocks(ticker:String, companyName:String) =
+         repository.searchStock(ticker, companyName)
+
+
 }

@@ -2,7 +2,6 @@ package com.romanzelenin.stocksmonitor
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -32,7 +31,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initSearchBar(){
         binding.appBarSearch.apply {
-
             background = ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.search_view_shape,
@@ -68,17 +66,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportFragmentManager.addOnBackStackChangedListener {
-            Log.d("!!back", supportFragmentManager.backStackEntryCount.toString())
-
             if(supportFragmentManager.backStackEntryCount == 0){
                 initSearchBar()
             }
         }
 
         binding.appBarSearch.apply {
-
             initSearchBar()
-
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     viewModel.saveSearchRequest(query)
@@ -89,11 +83,11 @@ class MainActivity : AppCompatActivity() {
                             .addToBackStack(null)
                             .replace(
                                 R.id.container,
-                                SearchResultFragment.newInstance(query.trim()),
+                                SearchResultFragment.newInstance(query),
                                 SearchResultFragment::class.java.simpleName
                             ).commit()
                     }else{
-                        //searchResultFragment.
+                        searchResultFragment.sendQuery(query)
                     }
                     return true
                 }
@@ -109,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-            setOnQueryTextFocusChangeListener { searchBar, hasFocus ->
+            setOnQueryTextFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     background = ResourcesCompat.getDrawable(
                         resources,
@@ -122,7 +116,6 @@ class MainActivity : AppCompatActivity() {
 
                     if (supportFragmentManager.findFragmentByTag(SearchFragment::class.java.simpleName) == null) {
                         isClickable = true
-
                         supportFragmentManager.beginTransaction()
                             .addToBackStack(null)
                             .replace(
@@ -130,13 +123,10 @@ class MainActivity : AppCompatActivity() {
                                 SearchFragment.newInstance(),
                                 SearchFragment::class.java.simpleName
                             ).commit()
-                    }else {
-
                     }
                 }
             }
         }
-
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -144,6 +134,11 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        findViewById<TextView>(androidx.appcompat.R.id.search_src_text).text = ""
     }
 
     override fun onPause() {

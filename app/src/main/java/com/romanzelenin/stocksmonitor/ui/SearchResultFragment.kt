@@ -2,25 +2,22 @@ package com.romanzelenin.stocksmonitor.ui
 
 import android.os.Bundle
 import android.transition.TransitionInflater
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.StocksAdapter
+import com.romanzelenin.stocksmonitor.StocksPagerAdapter
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchResultBinding
 import com.romanzelenin.stocksmonitor.model.Stock
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 
 class SearchResultFragment : Fragment() {
@@ -30,10 +27,14 @@ class SearchResultFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
 
+
+    var stocksAdapter:StocksAdapter? = null
+    var dataSet = mutableListOf<Stock>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val inflater = TransitionInflater.from(requireContext())
-        enterTransition =  inflater.inflateTransition(R.transition.slide_bottom)
+        enterTransition = inflater.inflateTransition(R.transition.slide_bottom)
     }
 
 
@@ -47,75 +48,52 @@ class SearchResultFragment : Fragment() {
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-
-            arguments?.let {
-            /*    setQuery(it.getString("QUERY"), false)
-                viewModel.query = query.toString()*/
-
-            }
-
-            val stocksAdapter = StocksAdapter(viewModel, object : DiffUtil.ItemCallback<Stock>() {
-                override fun areItemsTheSame(
-                    oldItem: Stock,
-                    newItem: Stock
-                ): Boolean {
-                    return oldItem.symbol == newItem.symbol
-                }
-
-                override fun areContentsTheSame(
-                    oldItem: Stock,
-                    newItem: Stock
-                ): Boolean {
-                    return oldItem == newItem
-                }
-            })
-
-            binding.includeScrollingList.listStocks.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = stocksAdapter
-            }
-            lifecycleScope.launch {
-                viewModel.searchStocks.collectLatest {
-                    stocksAdapter.submitData(it)
-                }
-            }
-
-
         requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
             setOnClickListener {
                 requireActivity().onBackPressed()
             }
         }
+        stocksAdapter = StocksAdapter(viewModel,dataSet)
+        binding.includeScrollingList.listStocks.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = stocksAdapter
+        }
 
 
+        arguments?.let {
+            sendQuery(it.getString("QUERY")!!)
+        }
+    }
 
+    fun sendQuery(query: String) {
+        viewModel.searchStocks(query, query).observe(viewLifecycleOwner){
+            Log.d("list", it.size.toString())
+            dataSet.clear()
+            dataSet.addAll(it)
+            stocksAdapter!!.notifyDataSetChanged()
+        }
     }
 
     companion object {
-
-
         @JvmStatic
         fun newInstance(query: String) =
             SearchResultFragment().apply {
                 arguments = Bundle().apply {
-                    putString("QUERY", query)
+                    putString("QUERY", query.trim())
                 }
             }
     }
 }
 
 
-class StocksPagigData(var viewModel: MainActivityViewModel):PagingSource<String,Stock>(){
-    override fun getRefreshKey(state: PagingState<String, Stock>): String? {
+/*
+class StocksPagigData(var viewModel: MainActivityViewModel):PagingSource<Int,Stock>(){
+    override fun getRefreshKey(state: PagingState<Int, Stock>): Int? {
        return null
     }
 
-    override suspend fun load(params: LoadParams<String>): LoadResult<String, Stock> {
-          /* val stocks =   viewModel.lookupStock(viewModel.query!!)
-        viewModel.addStocks(stocks)*/
-        //Todo:
-        return LoadResult.Page(emptyList(),null, null)
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Stock> {
+
     }
 
-}
+}*/

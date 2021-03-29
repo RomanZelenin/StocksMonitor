@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -22,11 +21,9 @@ import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
 
-
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +40,13 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
             setOnClickListener {
-                requireActivity().findViewById<TextView>(androidx.appcompat.R.id.search_src_text)
-                    .clearFocus()
                 requireActivity().onBackPressed()
             }
         }
 
-        //How to return
-       // if (savedInstanceState == null) {
             binding.apply {
                 val popularReqAdapter = initRecycler(recyclerPopularReq)
                 lifecycleScope.launch {
@@ -70,7 +61,7 @@ class SearchFragment : Fragment() {
                     recyclerYouVeSear.adapter?.notifyDataSetChanged()
                 })
             }
-     //   }
+
     }
 
 

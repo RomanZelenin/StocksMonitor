@@ -19,11 +19,10 @@ import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
 import com.romanzelenin.stocksmonitor.PagerCollectionAdapter
 import com.romanzelenin.stocksmonitor.PagerCollectionAdapter.Companion.ARG_TAB_NAME
-import com.romanzelenin.stocksmonitor.StocksAdapter
+import com.romanzelenin.stocksmonitor.StocksPagerAdapter
 import com.romanzelenin.stocksmonitor.databinding.ScrollingListStocksBinding
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
@@ -44,9 +43,8 @@ class ListStocksFragment : Fragment() {
             }
         }
     }
-    private lateinit var stocksAdapter: StocksAdapter
-    private var snackbar: Snackbar? = null
-
+    private lateinit var stocksPagerAdapter: StocksPagerAdapter
+  //  private var snackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +57,7 @@ class ListStocksFragment : Fragment() {
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        stocksAdapter = StocksAdapter(viewModel, object : DiffUtil.ItemCallback<Stock>() {
+        stocksPagerAdapter = StocksPagerAdapter(viewModel, object : DiffUtil.ItemCallback<Stock>() {
             override fun areItemsTheSame(
                 oldItem: Stock,
                 newItem: Stock
@@ -84,11 +82,11 @@ class ListStocksFragment : Fragment() {
 
         _binding?.listStocks?.apply {
             layoutManager = LinearLayoutManager(view.context)
-            adapter = stocksAdapter
+            adapter = stocksPagerAdapter
         }
         arguments?.takeIf { it.containsKey(ARG_TAB_NAME) }?.apply {
             if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.STOCKS_TAB) {
-                stocksAdapter.addLoadStateListener {
+                stocksPagerAdapter.addLoadStateListener {
                     if (getConnectionType(requireContext()) != 0) {
                         _binding?.listStocks?.isVisible = it.mediator?.refresh is LoadState.NotLoading
                         _binding?.progressBar?.isVisible = it.mediator?.refresh is LoadState.Loading
@@ -107,7 +105,7 @@ class ListStocksFragment : Fragment() {
                 }
                 lifecycleScope.launch {
                     viewModel.getTrendingStocks().asLiveData().observe(viewLifecycleOwner, {
-                        stocksAdapter.submitData(lifecycle, it.map {
+                        stocksPagerAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!.apply {
                                 isFavourite = viewModel.isFavouriteStock(it.symbol)
                             }
@@ -117,7 +115,7 @@ class ListStocksFragment : Fragment() {
             } else if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.FAVOURITE_TAB) {
                 lifecycleScope.launch {
                     viewModel.getFavouriteStocks().asLiveData().observe(viewLifecycleOwner, {
-                        stocksAdapter.submitData(lifecycle, it.map {
+                        stocksPagerAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!
                         })
                     })

@@ -16,13 +16,6 @@ import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
 import java.io.File
-import kotlin.collections.ArrayDeque
-import kotlin.collections.List
-import kotlin.collections.distinctBy
-import kotlin.collections.forEach
-import kotlin.collections.forEachIndexed
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 class Repository(private val context: Context) {
@@ -54,7 +47,6 @@ class Repository(private val context: Context) {
             localSource.getPopularRequestDao().insertAll(resp)
         }
     }
-
 
     val countryToCurrency = lazy {
         val symbols = mutableMapOf<String, String>()
@@ -125,6 +117,18 @@ class Repository(private val context: Context) {
     ) {
         localSource.stockDao().getAllFavouriteStock()
     }.flow
+
+   /* @ExperimentalPagingApi
+    val favouriteStocks2 = Pager(
+        config = PagingConfig(pageSize = 25),
+        ///remoteMediator = StocksRemoteMediator(service, db),
+    ) {
+        localSource.stockDao().searchStock("mrk","merk")
+    }.flow*/
+
+    fun searchStock(ticker:String, companyName:String):LiveData<List<Stock>>{
+        return localSource.stockDao().searchStock(ticker, companyName)
+    }
 
 
     fun getSearchedRequests(): LiveData<ArrayDeque<String>> {

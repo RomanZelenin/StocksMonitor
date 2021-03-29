@@ -1,5 +1,6 @@
 package com.romanzelenin.stocksmonitor.db.localdata
 
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.romanzelenin.stocksmonitor.model.FavouriteStock
@@ -10,7 +11,7 @@ import com.romanzelenin.stocksmonitor.model.TrendingStock
 interface StockDao {
 
     @Query("Select * From Stocks Where symbol like '%' || :ticket || '%' or shortName like '%' || :companyName ||'%'")
-    suspend fun searchStock(ticket: String, companyName:String):List<Stock>
+    fun searchStock(ticket: String, companyName:String):LiveData<List<Stock>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllStocks(stocks: List<Stock>)

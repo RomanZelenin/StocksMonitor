@@ -18,11 +18,11 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.round
 
-class StocksAdapter(
+class StocksPagerAdapter(
     private val model: MainActivityViewModel,
-    var dataSet:List<Stock>,
+    diff: DiffUtil.ItemCallback<Stock>,
 ) :
-    RecyclerView.Adapter<StocksAdapter.StocksRecyclerVH>() {
+    PagingDataAdapter<Stock, StocksPagerAdapter.StocksRecyclerVH>(diff) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StocksRecyclerVH {
         return StocksRecyclerVH.create(parent)
     }
@@ -51,7 +51,7 @@ class StocksAdapter(
         }
 
 
-        val item = dataSet[position]
+        val item = getItem(position)
 
         if (item != null) {
             holder.apply {
@@ -168,9 +168,5 @@ class StocksAdapter(
                 return StocksRecyclerVH(view)
             }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return dataSet.size
     }
 }
