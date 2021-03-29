@@ -3,37 +3,30 @@ package com.romanzelenin.stocksmonitor.ui
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
 import com.romanzelenin.stocksmonitor.PagerCollectionAdapter
 import com.romanzelenin.stocksmonitor.PagerCollectionAdapter.Companion.ARG_TAB_NAME
-import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.StocksAdapter
 import com.romanzelenin.stocksmonitor.databinding.ScrollingListStocksBinding
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -52,7 +45,7 @@ class ListStocksFragment : Fragment() {
         }
     }
     private lateinit var stocksAdapter: StocksAdapter
-    private var snackbar:Snackbar? = null
+    private var snackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,12 +74,12 @@ class ListStocksFragment : Fragment() {
             }
         })
 
-        snackbar =  Snackbar.make(binding.root.rootView, "Data loaded from cache.\n Try again?", Snackbar.LENGTH_LONG)
-            .setAction(R.string.retry) { stocksAdapter.retry() }
-            .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
-        val params = snackbar?.view?.layoutParams as? FrameLayout.LayoutParams
-        params?.gravity = Gravity.TOP
-        snackbar?.view?.layoutParams = params
+        /*   snackbar =  Snackbar.make(binding.root.rootView, "Data loaded from cache.\n Try again?", Snackbar.LENGTH_LONG)
+               .setAction(R.string.retry) { stocksAdapter.retry() }
+               .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+           val params = snackbar?.view?.layoutParams as? FrameLayout.LayoutParams
+           params?.gravity = Gravity.TOP
+           snackbar?.view?.layoutParams = params*/
 
         binding.listStocks.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -95,39 +88,38 @@ class ListStocksFragment : Fragment() {
         arguments?.takeIf { it.containsKey(ARG_TAB_NAME) }?.apply {
             if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.STOCKS_TAB) {
                 stocksAdapter.addLoadStateListener {
-                    Log.d("Fin", it.mediator?.toString() ?: "NULL")
-                    if(getConnectionType(requireContext())!=0) {
+                    if (getConnectionType(requireContext()) != 0) {
                         binding.listStocks.isVisible = it.mediator?.refresh is LoadState.NotLoading
                         binding.progressBar.isVisible = it.mediator?.refresh is LoadState.Loading
-                        if(it.mediator?.refresh is LoadState.Error){
-                          //  snackbar?.show()
-                          //  stocksAdapter.retry()
-                        }else{
-                           // snackbar?.dismiss()
+                        if (it.mediator?.refresh is LoadState.Error) {
+                            //  snackbar?.show()
+                            //  stocksAdapter.retry()
+                        } else {
+                            // snackbar?.dismiss()
                         }
-                    }else{
+                    } else {
                         binding.listStocks.isVisible = true
                         binding.progressBar.isVisible = false
-                       // snackbar?.show()
+                        // snackbar?.show()
 
                     }
                 }
                 lifecycleScope.launch {
-                    viewModel.getTrendingStocks().collectLatest {
-                        stocksAdapter.submitData(it.map {
+                    viewModel.getTrendingStocks().asLiveData().observe(viewLifecycleOwner, {
+                        stocksAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!.apply {
                                 isFavourite = viewModel.isFavouriteStock(it.symbol)
                             }
                         })
-                    }
+                    })
                 }
             } else if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.FAVOURITE_TAB) {
                 lifecycleScope.launch {
-                    viewModel.getFavouriteStocks().collectLatest {
-                        stocksAdapter.submitData(it.map {
+                    viewModel.getFavouriteStocks().asLiveData().observe(viewLifecycleOwner, {
+                        stocksAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!
                         })
-                    }
+                    })
                 }
 
             }

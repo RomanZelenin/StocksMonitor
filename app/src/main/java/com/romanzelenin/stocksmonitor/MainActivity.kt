@@ -54,18 +54,41 @@ class MainActivity : AppCompatActivity() {
                 typeface = ResourcesCompat.getFont(context, R.font.montserrat)
             }
 
+
             setOnQueryTextFocusChangeListener { searchBar, hasFocus ->
                 if (hasFocus) {
-                   /* supportFragmentManager.beginTransaction()
-                        .addToBackStack(null)
-                        .replace(R.id.container, SearchFragment.newInstance())
-                        .commit()*/
+                    background = ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.search_view_shape_bold,
+                        null
+                    )
+                    findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.west_back))
+                    }
+
+
+                    if (supportFragmentManager.findFragmentByTag(SearchFragment::class.java.simpleName) == null) {
+                        supportFragmentManager.beginTransaction()
+                            .addToBackStack(null)
+                            .replace(
+                                R.id.container,
+                                SearchFragment.newInstance(),
+                                SearchFragment::class.java.simpleName
+                            ).commit()
+                    }
+
+                } else {
+                    background = ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.search_view_shape,
+                        null
+                    )
                 }
             }
         }
 
 
-      if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.container, PagerCollectionFragment.newInstance())
                 .commit()

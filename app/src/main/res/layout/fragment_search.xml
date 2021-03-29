@@ -12,23 +12,6 @@
         android:layout_height="wrap_content"
         tools:context=".ui.SearchFragment">
 
-        <FrameLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible">
-
-            <include
-                android:id="@+id/include_search_bar"
-                layout="@layout/search_bar"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="0dp"
-                tools:visibility="visible" />
-        </FrameLayout>
-
         <TextView
             android:id="@+id/you_ve_sear"
             android:layout_width="wrap_content"
@@ -47,12 +30,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
             android:lineSpacingExtra="2sp"
             android:text="@string/popular_req"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+            app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
