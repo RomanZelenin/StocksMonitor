@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.paging.ExperimentalPagingApi
@@ -28,7 +29,7 @@ class SearchResultFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
 
 
-    var stocksAdapter:StocksAdapter? = null
+    var stocksAdapter: StocksAdapter? = null
     var dataSet = mutableListOf<Stock>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +54,7 @@ class SearchResultFragment : Fragment() {
                 requireActivity().onBackPressed()
             }
         }
-        stocksAdapter = StocksAdapter(viewModel,dataSet)
+        stocksAdapter = StocksAdapter(viewModel, dataSet)
         binding.includeScrollingList.listStocks.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = stocksAdapter
@@ -67,11 +68,12 @@ class SearchResultFragment : Fragment() {
 
 
     fun sendQuery(query: String) {
-        viewModel.searchStocks(query, query).observe(viewLifecycleOwner){
-            Log.d("list", it.size.toString())
+        viewModel.searchStocks(query, query).observe(viewLifecycleOwner) {
             dataSet.clear()
             dataSet.addAll(it)
-            stocksAdapter!!.notifyDataSetChanged()
+            stocksAdapter?.notifyDataSetChanged()
+            binding.dataNotFound.isVisible = dataSet.isEmpty()
+
         }
     }
 

@@ -8,6 +8,7 @@
     <string name="popular_req">Popular requests</string>
     <string name="you_ve_sear">You\'ve searched for this</string>
     <string name="retry">Retry</string>
+    <string name="nothing_found">"Nothing found "</string>
 
     <string-array name="countryToCurrency">
         <item>AUD,\u24</item>
