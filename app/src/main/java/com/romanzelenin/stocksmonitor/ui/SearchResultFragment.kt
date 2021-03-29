@@ -1,26 +1,20 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui
 
-import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.romanzelenin.stocksmonitor.MainActivityViewModel
+import com.romanzelenin.stocksmonitor.StocksAdapter
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchResultBinding
 import com.romanzelenin.stocksmonitor.model.Stock
 import kotlinx.coroutines.flow.collectLatest
@@ -45,24 +39,11 @@ class SearchResultFragment : Fragment() {
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.includeSearchBar.appBarSearch.apply {
-            setOnQueryTextFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    val imm =
-                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.showSoftInput(v.findFocus(), 0)
-                }
-            }
 
-            requestFocus()
-            background = ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.search_view_shape_bold,
-                null
-            )
+
             arguments?.let {
-                setQuery(it.getString("QUERY"), false)
-                viewModel.query = query.toString()
+            /*    setQuery(it.getString("QUERY"), false)
+                viewModel.query = query.toString()*/
 
             }
 
@@ -92,20 +73,13 @@ class SearchResultFragment : Fragment() {
                 }
             }
 
-            findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
-                ContextCompat.getDrawable(context, R.drawable.close_icon)
-            )
-            findViewById<SearchView.SearchAutoComplete>(androidx.appcompat.R.id.search_src_text).apply {
-                setHintTextColor(Color.BLACK)
-                typeface = ResourcesCompat.getFont(context, R.font.montserrat)
-            }
-            findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
-                setImageDrawable(ContextCompat.getDrawable(context, R.drawable.west_back))
-                setOnClickListener {
-                    requireActivity().onBackPressed()
-                }
+
+        requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+            setOnClickListener {
+                requireActivity().onBackPressed()
             }
         }
+
 
 
     }
@@ -130,10 +104,10 @@ class StocksPagigData(var viewModel: MainActivityViewModel):PagingSource<String,
     }
 
     override suspend fun load(params: LoadParams<String>): LoadResult<String, Stock> {
-           val stocks =   viewModel.lookupStock(viewModel.query!!)
-        viewModel.addStocks(stocks)
+          /* val stocks =   viewModel.lookupStock(viewModel.query!!)
+        viewModel.addStocks(stocks)*/
         //Todo:
-        return LoadResult.Page(stocks,null, null)
+        return LoadResult.Page(emptyList(),null, null)
     }
 
 }

@@ -1,9 +1,8 @@
 package com.romanzelenin.stocksmonitor
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.inputmethod.InputMethodManager
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -18,6 +17,7 @@ import com.romanzelenin.stocksmonitor.databinding.ActivityMainBinding
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.ui.PagerCollectionFragment
 import com.romanzelenin.stocksmonitor.ui.SearchFragment
+import com.romanzelenin.stocksmonitor.ui.SearchResultFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,16 +30,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @ExperimentalPagingApi
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
+    private fun initSearchBar(){
         binding.appBarSearch.apply {
+
+            background = ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.search_view_shape,
+                null
+            )
             findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
                 ContextCompat.getDrawable(context, R.drawable.close_icon)
             )
+
             findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
                 setImageDrawable(
                     ContextCompat.getDrawable(
@@ -47,20 +49,99 @@ class MainActivity : AppCompatActivity() {
                         R.drawable.ic_search_black_24dp
                     )
                 )
+                isClickable = false
             }
+
             findViewById<TextView>(androidx.appcompat.R.id.search_src_text).apply {
                 setHintTextColor(Color.BLACK)
                 typeface = ResourcesCompat.getFont(context, R.font.montserrat)
             }
+            setQuery("",false)
+            clearFocus()
+        }
+    }
+
+    @ExperimentalPagingApi
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            Log.d("!!back", supportFragmentManager.backStackEntryCount.toString())
+
+            if(supportFragmentManager.backStackEntryCount == 0){
+                initSearchBar()
+            }
+         /*   if(supportFragmentManager.){
+               binding.appBarSearch.apply {
+                   background = ResourcesCompat.getDrawable(
+                       resources,
+                       R.drawable.search_view_shape,
+                       null
+                   )
+                   findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
+                       ContextCompat.getDrawable(context, R.drawable.close_icon)
+                   )
+
+                   findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                       setImageDrawable(
+                           ContextCompat.getDrawable(
+                               context,
+                               R.drawable.ic_search_black_24dp
+                           )
+                       )
+                       isClickable = false
+                   }
+
+                   findViewById<TextView>(androidx.appcompat.R.id.search_src_text).apply {
+                       setHintTextColor(Color.BLACK)
+                       typeface = ResourcesCompat.getFont(context, R.font.montserrat)
+                   }
+
+                   setQuery("",false)
+
+                   //Hide soft keyboard
+                   val imm =
+                       context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                   imm.hideSoftInputFromWindow(windowToken, 0)
+                   //--------
+               }
+
+            }*/
+        }
+
+        binding.appBarSearch.apply {
+
+            initSearchBar()
 
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     viewModel.saveSearchRequest(query)
+                    val searchResultFragment = supportFragmentManager.findFragmentByTag(
+                        SearchResultFragment::class.java.simpleName) as? SearchResultFragment
+                    if(searchResultFragment==null) {
+                        supportFragmentManager.beginTransaction()
+                            .addToBackStack(null)
+                            .replace(
+                                R.id.container,
+                                SearchResultFragment.newInstance(query.trim()),
+                                SearchResultFragment::class.java.simpleName
+                            ).commit()
+                    }else{
+                        //searchResultFragment.
+                    }
                     return true
                 }
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    return false
+                override fun onQueryTextChange(newText: String): Boolean {
+               /*     if (supportFragmentManager.findFragmentByTag(SearchResultFragment::class.java.simpleName)==null) {
+                        supportFragmentManager.beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.container, SearchResultFragment.newInstance(newText),SearchResultFragment::class.java.simpleName)
+                            .commit()
+                    }*/
+                    return true
                 }
             })
 
@@ -75,7 +156,6 @@ class MainActivity : AppCompatActivity() {
                         setImageDrawable(ContextCompat.getDrawable(context, R.drawable.west_back))
                     }
 
-
                     if (supportFragmentManager.findFragmentByTag(SearchFragment::class.java.simpleName) == null) {
                         isClickable = true
                         supportFragmentManager.beginTransaction()
@@ -85,30 +165,9 @@ class MainActivity : AppCompatActivity() {
                                 SearchFragment.newInstance(),
                                 SearchFragment::class.java.simpleName
                             ).commit()
+                    }else {
+
                     }
-
-                } else {
-                    background = ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.search_view_shape,
-                        null
-                    )
-                    findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
-                        setImageDrawable(
-                            ContextCompat.getDrawable(
-                                context,
-                                R.drawable.ic_search_black_24dp
-                            )
-                        )
-                        isClickable = false
-                    }
-
-                    //Hide soft keyboard
-                    val imm =
-                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(windowToken, 0)
-                    //--------
-
                 }
             }
         }
@@ -116,7 +175,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.container, PagerCollectionFragment.newInstance())
+                .replace(R.id.container, PagerCollectionFragment.newInstance())
                 .commit()
         }
 

@@ -4,9 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.romanzelenin.stocksmonitor.model.PopularRequest
+import com.romanzelenin.stocksmonitor.ui.SearchResultFragment
 
 class PopularReqAdapter(var dataSet: List<String>) :
     RecyclerView.Adapter<PopularReqAdapter.PopularReqVH>() {

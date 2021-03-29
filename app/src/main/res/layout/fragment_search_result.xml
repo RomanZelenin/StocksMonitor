@@ -6,41 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".SearchResultFragment">
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
-
-        <include
-            android:id="@+id/include_search_bar"
-            layout="@layout/search_bar"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="0dp"
-            tools:visibility="visible" />
-    </FrameLayout>
-
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="8dp"
         android:text="@string/stocks"
         app:layout_constraintBottom_toTopOf="@+id/include_scrolling_list"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <include
         android:id="@+id/include_scrolling_list"
         layout="@layout/scrolling_list_stocks"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

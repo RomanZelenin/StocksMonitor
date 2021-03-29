@@ -9,6 +9,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
+import com.romanzelenin.stocksmonitor.ui.StocksPagigData
 
 class MainActivityViewModel(application: Application, val repository: Repository) :
     AndroidViewModel(application) {
