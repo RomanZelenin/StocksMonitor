@@ -47,6 +47,7 @@ class ListStocksFragment : Fragment() {
     private lateinit var stocksAdapter: StocksAdapter
     private var snackbar: Snackbar? = null
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

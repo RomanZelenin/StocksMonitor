@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (supportFragmentManager.findFragmentByTag(SearchFragment::class.java.simpleName) == null) {
                         isClickable = true
+
                         supportFragmentManager.beginTransaction()
                             .addToBackStack(null)
                             .replace(

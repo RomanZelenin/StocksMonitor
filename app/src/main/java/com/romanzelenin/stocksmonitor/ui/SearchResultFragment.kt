@@ -1,6 +1,7 @@
 package com.romanzelenin.stocksmonitor.ui
 
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
+import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.StocksAdapter
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchResultBinding
 import com.romanzelenin.stocksmonitor.model.Stock
@@ -27,6 +29,12 @@ class SearchResultFragment : Fragment() {
     private var _binding: FragmentSearchResultBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val inflater = TransitionInflater.from(requireContext())
+        enterTransition =  inflater.inflateTransition(R.transition.slide_bottom)
+    }
 
 
     override fun onCreateView(

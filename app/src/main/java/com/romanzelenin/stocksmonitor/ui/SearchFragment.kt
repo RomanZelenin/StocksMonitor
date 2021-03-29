@@ -1,14 +1,12 @@
 package com.romanzelenin.stocksmonitor.ui
 
-import android.content.Context
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +27,12 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val inflater = TransitionInflater.from(requireContext())
+        enterTransition =  inflater.inflateTransition(R.transition.fade_long)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
