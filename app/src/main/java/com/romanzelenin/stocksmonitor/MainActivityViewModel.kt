@@ -49,10 +49,6 @@ class MainActivityViewModel(application: Application, private val repository: Re
 
     suspend fun getStock(symbol: String) = repository.getStock(symbol)
 
-    suspend fun addStocks(stocks:List<Stock>){
-        //Todo:
-    }
-
     fun saveSearchRequest(query: String){
         repository.saveSearchRequest(query.trim())
     }
@@ -61,9 +57,8 @@ class MainActivityViewModel(application: Application, private val repository: Re
         repository.flushSavedRequestFromMemoryToDisk()
     }
 
-
-    fun searchStocks(ticker:String, companyName:String) =
-         repository.searchStock(ticker, companyName)
+    fun searchStocks(ticker:String, companyName:String)
+       = repository.searchStock(ticker, companyName)
 
 
 }

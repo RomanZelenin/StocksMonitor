@@ -65,6 +65,7 @@ class SearchResultFragment : Fragment() {
         }
     }
 
+
     fun sendQuery(query: String) {
         viewModel.searchStocks(query, query).observe(viewLifecycleOwner){
             Log.d("list", it.size.toString())

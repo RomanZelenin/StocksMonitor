@@ -113,27 +113,17 @@ class Repository(private val context: Context) {
     @ExperimentalPagingApi
     val favouriteStocks = Pager(
         config = PagingConfig(pageSize = 25),
-        ///remoteMediator = StocksRemoteMediator(service, db),
     ) {
         localSource.stockDao().getAllFavouriteStock()
     }.flow
 
-   /* @ExperimentalPagingApi
-    val favouriteStocks2 = Pager(
-        config = PagingConfig(pageSize = 25),
-        ///remoteMediator = StocksRemoteMediator(service, db),
-    ) {
-        localSource.stockDao().searchStock("mrk","merk")
-    }.flow*/
 
-    fun searchStock(ticker:String, companyName:String):LiveData<List<Stock>>{
-        return localSource.stockDao().searchStock(ticker, companyName)
+    fun searchStock(ticker:String, companyName:String) = liveData {
+        emitSource( localSource.stockDao().searchStock(ticker, companyName))
+      /*  val resp = remoteSource.symLookup(ticker)
+        localSource.stockDao().insertAllStocks(resp)*/
     }
 
-
-    fun getSearchedRequests(): LiveData<ArrayDeque<String>> {
-        return searchedRequests
-    }
 
     fun saveSearchRequest(query: String) {
         val request = PopularRequest(query)
