@@ -73,42 +73,6 @@ class MainActivity : AppCompatActivity() {
             if(supportFragmentManager.backStackEntryCount == 0){
                 initSearchBar()
             }
-         /*   if(supportFragmentManager.){
-               binding.appBarSearch.apply {
-                   background = ResourcesCompat.getDrawable(
-                       resources,
-                       R.drawable.search_view_shape,
-                       null
-                   )
-                   findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
-                       ContextCompat.getDrawable(context, R.drawable.close_icon)
-                   )
-
-                   findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
-                       setImageDrawable(
-                           ContextCompat.getDrawable(
-                               context,
-                               R.drawable.ic_search_black_24dp
-                           )
-                       )
-                       isClickable = false
-                   }
-
-                   findViewById<TextView>(androidx.appcompat.R.id.search_src_text).apply {
-                       setHintTextColor(Color.BLACK)
-                       typeface = ResourcesCompat.getFont(context, R.font.montserrat)
-                   }
-
-                   setQuery("",false)
-
-                   //Hide soft keyboard
-                   val imm =
-                       context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                   imm.hideSoftInputFromWindow(windowToken, 0)
-                   //--------
-               }
-
-            }*/
         }
 
         binding.appBarSearch.apply {

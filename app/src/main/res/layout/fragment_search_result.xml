@@ -15,6 +15,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="8dp"
         android:text="@string/stocks"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/include_scrolling_list"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
