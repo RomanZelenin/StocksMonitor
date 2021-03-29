@@ -61,7 +61,7 @@ class FinService(pathToCacheDir:String) {
                 client.get<SymLookupResp>("${finhub_host}search?q=$query&token=$finhub_token")
             if (respond.count == 0) emptyList()
             else respond.result.mapNotNull { symToStock(it) }
-        }!!
+        } ?: emptyList()
     }
 
     suspend fun popularRequests(amount: Int = 10): List<String> {
@@ -69,7 +69,7 @@ class FinService(pathToCacheDir:String) {
             client.get<List<MostWatched>>("${mboum_host}tr/trending?apikey=$mboum_token")[0].quotes
                 .take(amount)
                 .mapNotNull { getCompanyProfile(it)?.name }
-        }!!
+        } ?: emptyList()
     }
 
     suspend fun mostActiveStocks(start: Int): List<Stock>? {

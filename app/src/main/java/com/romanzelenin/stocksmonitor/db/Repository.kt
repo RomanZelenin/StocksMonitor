@@ -1,9 +1,9 @@
 package com.romanzelenin.stocksmonitor.db
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
+import android.util.Log
+import androidx.arch.core.util.Function
+import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -14,8 +14,13 @@ import com.romanzelenin.stocksmonitor.StocksRemoteMediator
 import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.io.File
+import kotlin.concurrent.thread
+import kotlin.coroutines.coroutineContext
 
 class Repository(context: Context) {
     private val remoteSource = FinService.getInstance(context)
@@ -35,11 +40,32 @@ class Repository(context: Context) {
         }
     }
 
-    val popularRequests: LiveData<List<String>> by lazy {
-        localSource.getPopularRequestDao().getAllPopularRequest()
-            .map { it.map { it.name } }
-            .asLiveData()
+
+    val popularRequests = liveData(timeoutInMs = 500) {
+        emitSource(localSource.getPopularRequestDao()
+            .getAllPopularRequest().map { it.map { it.name } })
+        val resp = remoteSource.popularRequests().map { PopularRequest(it) }
+
+        localSource.withTransaction {
+            localSource.getPopularRequestDao().clearPopularRequest()
+            localSource.getPopularRequestDao().insertAll(resp)
+        }
     }
+
+
+    /*     flow {
+             val resp = localSource.getPopularRequestDao().getAllPopularRequest()
+                 .map { it.map { it.name } }
+             emit(resp)
+             while (true) {
+                 localSource.getPopularRequestDao()
+                     .insertAll(remoteSource.popularRequests().map { PopularRequest(it) })
+                 emit(resp)
+             }
+         }
+
+
+     }*/
 
     val countryToCurrency = lazy {
         val symbols = mutableMapOf<String, String>()

@@ -1,5 +1,6 @@
 package com.romanzelenin.stocksmonitor.db.localdata
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,7 +15,7 @@ interface PopularRequestDao {
     suspend fun insertAll(request:List<PopularRequest>)
 
     @Query("Select * From PopularRequests")
-    fun getAllPopularRequest():Flow<List<PopularRequest>>
+    fun getAllPopularRequest():LiveData<List<PopularRequest>>
 
     @Query("Delete From PopularRequests")
     fun clearPopularRequest()

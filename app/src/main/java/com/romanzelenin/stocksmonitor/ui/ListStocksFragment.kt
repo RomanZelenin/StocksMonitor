@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 class ListStocksFragment : Fragment() {
 
     private var _binding: ScrollingListStocksBinding? = null
-    private val binding get() = _binding!!
+//    private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -53,7 +53,7 @@ class ListStocksFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ScrollingListStocksBinding.inflate(inflater, container, false)
-        return binding.root
+        return _binding!!.root
     }
 
     @ExperimentalPagingApi
@@ -81,7 +81,7 @@ class ListStocksFragment : Fragment() {
            params?.gravity = Gravity.TOP
            snackbar?.view?.layoutParams = params*/
 
-        binding.listStocks.apply {
+        _binding?.listStocks?.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = stocksAdapter
         }
@@ -89,8 +89,8 @@ class ListStocksFragment : Fragment() {
             if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.STOCKS_TAB) {
                 stocksAdapter.addLoadStateListener {
                     if (getConnectionType(requireContext()) != 0) {
-                        binding.listStocks.isVisible = it.mediator?.refresh is LoadState.NotLoading
-                        binding.progressBar.isVisible = it.mediator?.refresh is LoadState.Loading
+                        _binding?.listStocks?.isVisible = it.mediator?.refresh is LoadState.NotLoading
+                        _binding?.progressBar?.isVisible = it.mediator?.refresh is LoadState.Loading
                         if (it.mediator?.refresh is LoadState.Error) {
                             //  snackbar?.show()
                             //  stocksAdapter.retry()
@@ -98,8 +98,8 @@ class ListStocksFragment : Fragment() {
                             // snackbar?.dismiss()
                         }
                     } else {
-                        binding.listStocks.isVisible = true
-                        binding.progressBar.isVisible = false
+                        _binding?.listStocks?.isVisible = true
+                        _binding?.progressBar?.isVisible = false
                         // snackbar?.show()
 
                     }

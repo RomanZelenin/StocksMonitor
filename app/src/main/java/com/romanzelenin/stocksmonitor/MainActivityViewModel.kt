@@ -8,7 +8,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.romanzelenin.stocksmonitor.db.Repository
-import com.romanzelenin.stocksmonitor.model.PopularRequest
 import com.romanzelenin.stocksmonitor.model.Stock
 
 class MainActivityViewModel(application: Application, val repository: Repository) :
@@ -30,9 +29,7 @@ class MainActivityViewModel(application: Application, val repository: Repository
             }
     }
 
-    fun getPopularRequests(onlyFromCache: Boolean): LiveData<List<String>> {
-        return repository.popularRequests
-    }
+    val popularRequests = repository.popularRequests
 
     @ExperimentalPagingApi
     fun getTrendingStocks() = repository.trendingStocks

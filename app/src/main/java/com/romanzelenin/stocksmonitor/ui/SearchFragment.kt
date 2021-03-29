@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -18,6 +19,7 @@ import com.romanzelenin.stocksmonitor.MainActivityViewModel
 import com.romanzelenin.stocksmonitor.PopularReqAdapter
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchBinding
+import kotlinx.coroutines.launch
 
 
 class SearchFragment : Fragment() {
@@ -42,31 +44,39 @@ class SearchFragment : Fragment() {
 
         requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
             setOnClickListener {
-                setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_search_black_24dp))
-                requireActivity().findViewById<TextView>(androidx.appcompat.R.id.search_src_text).clearFocus()
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_search_black_24dp
+                    )
+                )
+                requireActivity().findViewById<TextView>(androidx.appcompat.R.id.search_src_text)
+                    .clearFocus()
                 //Hide soft keyboard
-                val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(view.windowToken, 0)
                 //--------
                 requireActivity().onBackPressed()
             }
         }
-
-        binding.apply {
-            val popularReqAdapter = initRecycler(recyclerPopularReq)
-            viewModel.getPopularRequests(false).observe(viewLifecycleOwner, {
-                popularReqAdapter.dataSet = it
-                recyclerPopularReq.adapter?.notifyDataSetChanged()
-            })
-            val youVeSearchAdapter = initRecycler(recyclerYouVeSear)
-            viewModel.searchedRequests.observe(viewLifecycleOwner, {
-                youVeSearchAdapter.dataSet = it
-                recyclerYouVeSear.adapter?.notifyDataSetChanged()
-            })
-
-        }
-
-
+        //How to return
+       // if (savedInstanceState == null) {
+            binding.apply {
+                val popularReqAdapter = initRecycler(recyclerPopularReq)
+                lifecycleScope.launch {
+                    viewModel.popularRequests.observe(viewLifecycleOwner, {
+                            popularReqAdapter.dataSet = it
+                            recyclerPopularReq.adapter?.notifyDataSetChanged()
+                    })
+                }
+                val youVeSearchAdapter = initRecycler(recyclerYouVeSear)
+                viewModel.searchedRequests.observe(viewLifecycleOwner, {
+                    youVeSearchAdapter.dataSet = it
+                    recyclerYouVeSear.adapter?.notifyDataSetChanged()
+                })
+            }
+     //   }
     }
 
 
