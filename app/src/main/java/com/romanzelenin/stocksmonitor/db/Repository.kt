@@ -120,8 +120,6 @@ class Repository(private val context: Context) {
 
     fun searchStock(ticker:String, companyName:String) = liveData {
         emitSource( localSource.stockDao().searchStock(ticker, companyName))
-      /*  val resp = remoteSource.symLookup(ticker)
-        localSource.stockDao().insertAllStocks(resp)*/
     }
 
 

@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 class ListStocksFragment : Fragment() {
 
     private var _binding: ScrollingListStocksBinding? = null
-//    private val binding get() = _binding!!
+
     private val viewModel: MainActivityViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -44,7 +44,7 @@ class ListStocksFragment : Fragment() {
         }
     }
     private lateinit var stocksPagerAdapter: StocksPagerAdapter
-  //  private var snackbar: Snackbar? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,12 +73,6 @@ class ListStocksFragment : Fragment() {
             }
         })
 
-        /*   snackbar =  Snackbar.make(binding.root.rootView, "Data loaded from cache.\n Try again?", Snackbar.LENGTH_LONG)
-               .setAction(R.string.retry) { stocksAdapter.retry() }
-               .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
-           val params = snackbar?.view?.layoutParams as? FrameLayout.LayoutParams
-           params?.gravity = Gravity.TOP
-           snackbar?.view?.layoutParams = params*/
 
         _binding?.listStocks?.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -90,16 +84,9 @@ class ListStocksFragment : Fragment() {
                     if (getConnectionType(requireContext()) != 0) {
                         _binding?.listStocks?.isVisible = it.mediator?.refresh is LoadState.NotLoading
                         _binding?.progressBar?.isVisible = it.mediator?.refresh is LoadState.Loading
-                        if (it.mediator?.refresh is LoadState.Error) {
-                            //  snackbar?.show()
-                            //  stocksAdapter.retry()
-                        } else {
-                            // snackbar?.dismiss()
-                        }
                     } else {
                         _binding?.listStocks?.isVisible = true
                         _binding?.progressBar?.isVisible = false
-                        // snackbar?.show()
 
                     }
                 }
@@ -124,7 +111,6 @@ class ListStocksFragment : Fragment() {
             }
         }
     }
-
 
     fun getConnectionType(context: Context): Int {
         var result = 0 // Returns connection type. 0: none; 1: mobile data; 2: wifi

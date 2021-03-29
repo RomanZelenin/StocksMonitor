@@ -93,12 +93,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onQueryTextChange(newText: String): Boolean {
-               /*     if (supportFragmentManager.findFragmentByTag(SearchResultFragment::class.java.simpleName)==null) {
-                        supportFragmentManager.beginTransaction()
-                            .addToBackStack(null)
-                            .replace(R.id.container, SearchResultFragment.newInstance(newText),SearchResultFragment::class.java.simpleName)
-                            .commit()
-                    }*/
                     return true
                 }
             })

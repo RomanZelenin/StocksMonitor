@@ -88,15 +88,3 @@ class SearchResultFragment : Fragment() {
     }
 }
 
-
-/*
-class StocksPagigData(var viewModel: MainActivityViewModel):PagingSource<Int,Stock>(){
-    override fun getRefreshKey(state: PagingState<Int, Stock>): Int? {
-       return null
-    }
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Stock> {
-
-    }
-
-}*/
