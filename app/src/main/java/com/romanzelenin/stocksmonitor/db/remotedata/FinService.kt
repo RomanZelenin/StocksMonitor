@@ -17,8 +17,6 @@ import java.io.File
 import java.nio.channels.UnresolvedAddressException
 
 class FinService(pathToCacheDir:String) {
-    private val TAG = FinService::class.java.simpleName
-
     private val cacheImagesFolder = "images"
     private val pathToImgDir = pathToCacheDir + File.separator + cacheImagesFolder
 
@@ -165,6 +163,8 @@ class FinService(pathToCacheDir:String) {
     }
 
     companion object {
+        private val TAG = FinService::class.java.simpleName
+
         @Volatile
         private var INSTANCE: FinService? = null
 

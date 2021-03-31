@@ -2,6 +2,7 @@ package com.romanzelenin.stocksmonitor
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -11,12 +12,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.romanzelenin.stocksmonitor.databinding.ActivityMainBinding
 import com.romanzelenin.stocksmonitor.db.Repository
-import com.romanzelenin.stocksmonitor.ui.PagerCollectionFragment
-import com.romanzelenin.stocksmonitor.ui.SearchFragment
-import com.romanzelenin.stocksmonitor.ui.SearchResultFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,75 +28,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initSearchBar(){
-        binding.appBarSearch.apply {
-            background = ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.search_view_shape,
-                null
-            )
-            findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
-                ContextCompat.getDrawable(context, R.drawable.close_icon)
-            )
-
-            findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
-                setImageDrawable(
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_search_black_24dp
-                    )
-                )
-                isClickable = false
-            }
-
-            findViewById<TextView>(androidx.appcompat.R.id.search_src_text).apply {
-                setHintTextColor(Color.BLACK)
-                typeface = ResourcesCompat.getFont(context, R.font.montserrat)
-            }
-            setQuery("",false)
-            clearFocus()
-        }
-    }
-
     @ExperimentalPagingApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportFragmentManager.addOnBackStackChangedListener {
-            if(supportFragmentManager.backStackEntryCount == 0){
-                initSearchBar()
-            }
-        }
+        val navController = findNavController(R.id.nav_host_fragment)
 
         binding.appBarSearch.apply {
-            initSearchBar()
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    viewModel.saveSearchRequest(query)
-                    val searchResultFragment = supportFragmentManager.findFragmentByTag(
-                        SearchResultFragment::class.java.simpleName) as? SearchResultFragment
-                    if(searchResultFragment==null) {
-                        supportFragmentManager.beginTransaction()
-                            .addToBackStack(null)
-                            .replace(
-                                R.id.container,
-                                SearchResultFragment.newInstance(query),
-                                SearchResultFragment::class.java.simpleName
-                            ).commit()
-                    }else{
-                        searchResultFragment.sendQuery(query)
-                    }
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String): Boolean {
-                    return true
-                }
-            })
-
-            setOnQueryTextFocusChangeListener { _, hasFocus ->
+            findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                setOnClickListener { onBackPressed() }
+                isClickable = false
+            }
+            findViewById<View>(androidx.appcompat.R.id.search_plate).setBackgroundColor(Color.TRANSPARENT)
+            findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setImageDrawable(
+                ContextCompat.getDrawable(context, R.drawable.close_icon)
+            )
+            findViewById<TextView>(androidx.appcompat.R.id.search_src_text).apply {
+                setHintTextColor(Color.BLACK)
+                typeface = ResourcesCompat.getFont(context, R.font.montserrat)
+            }
+            setOnQueryTextFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
                     background = ResourcesCompat.getDrawable(
                         resources,
@@ -106,37 +58,62 @@ class MainActivity : AppCompatActivity() {
                     )
                     findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
                         setImageDrawable(ContextCompat.getDrawable(context, R.drawable.west_back))
-                    }
-
-                    if (supportFragmentManager.findFragmentByTag(SearchFragment::class.java.simpleName) == null) {
                         isClickable = true
-                        supportFragmentManager.beginTransaction()
-                            .addToBackStack(null)
-                            .replace(
-                                R.id.container,
-                                SearchFragment.newInstance(),
-                                SearchFragment::class.java.simpleName
-                            ).commit()
                     }
+                    if (navController.currentDestination?.id == R.id.pager_collection) {
+                        navController.navigate(R.id.action_pager_collection_to_searchFragment)
+                    }
+                } else {
+                    background = ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.search_view_shape,
+                        null
+                    )
+                    /*     if (navController.currentDestination?.id == R.id.searchFragment){
+                             navController.navigate(R.id.action_global_pager_collection)
+                         }*/
+                }
+            }
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (navController.currentDestination?.id != R.id.searchResultFragment) {
+                        navController.navigate(R.id.action_searchFragment_to_searchResultFragment)
+                    }
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.pager_collection) {
+                binding.appBarSearch.apply {
+                    setQuery("", false)
+                    clearFocus()
+                }
+                findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                    isClickable = false
+                    setImageDrawable(
+                        ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_search_black_24dp
+                        )
+                    )
+                }
+            } else {
+                findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                    setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.west_back))
+                    isClickable = true
                 }
             }
         }
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, PagerCollectionFragment.newInstance())
-                .commit()
-        }
-
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        findViewById<TextView>(androidx.appcompat.R.id.search_src_text).text = ""
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.flushSavedRequestFromMemoryToDisk()
-    }
+    /*   override fun onPause() {
+           super.onPause()
+           viewModel.flushSavedRequestFromMemoryToDisk()
+       }*/
 }

@@ -7,7 +7,6 @@
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -15,11 +14,9 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="bottom"
             android:minHeight="?attr/actionBarSize"
             app:layout_collapseMode="pin"
             app:layout_scrollFlags="scroll|enterAlways|exitUntilCollapsed"
-            app:tabIndicatorHeight="0dp"
             app:tabMode="scrollable"
             app:tabTextAppearance="@style/tabStyle"
             app:tabTextColor="@color/tab_color_state">

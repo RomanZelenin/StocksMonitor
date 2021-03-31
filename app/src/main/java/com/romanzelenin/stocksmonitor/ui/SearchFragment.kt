@@ -1,22 +1,17 @@
 package com.romanzelenin.stocksmonitor.ui
 
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
 import com.romanzelenin.stocksmonitor.PopularReqAdapter
-import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchBinding
-import kotlinx.coroutines.launch
 
 
 class SearchFragment : Fragment() {
@@ -25,11 +20,6 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val inflater = TransitionInflater.from(requireContext())
-        enterTransition =  inflater.inflateTransition(R.transition.fade_long)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +31,7 @@ class SearchFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+   /*     requireActivity().findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
             setOnClickListener {
                 requireActivity().onBackPressed()
             }
@@ -60,9 +50,11 @@ class SearchFragment : Fragment() {
                     youVeSearchAdapter.dataSet = it
                     recyclerYouVeSear.adapter?.notifyDataSetChanged()
                 })
-            }
+            }*/
 
     }
+
+
 
 
     private fun initRecycler(recyclerView: RecyclerView): PopularReqAdapter {

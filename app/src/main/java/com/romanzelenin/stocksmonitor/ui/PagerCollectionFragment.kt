@@ -30,6 +30,7 @@ class PagerCollectionFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         pagerCollectionAdapter = PagerCollectionAdapter(this)
 
@@ -50,22 +51,14 @@ class PagerCollectionFragment : Fragment() {
                 textSize = 18f
                 setTextColor(getColor(context, R.color.light_gray))
                 minWidth = (resources.displayMetrics.density * 140).toInt()
-
             }
 
             TabLayoutMediator(tabs, pager) { tab, position ->
-
-                tab.text = if (position == 0)
-                    getString(R.string.stocks)
-                else
-                    getString(R.string.favourite)
-
-                tab.customView = if (position == 0)
-                    stocksTabText
-                else
-                    favouriteTabText
-
+                tab.text =
+                    if (position == 0) getString(R.string.stocks) else getString(R.string.favourite)
+                tab.customView = if (position == 0) stocksTabText else favouriteTabText
             }.attach()
+
             tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
