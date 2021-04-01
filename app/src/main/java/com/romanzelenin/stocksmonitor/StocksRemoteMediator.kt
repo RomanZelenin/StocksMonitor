@@ -9,6 +9,7 @@ import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.RemoteKey
 import com.romanzelenin.stocksmonitor.model.TrendingStock
+import io.ktor.client.features.*
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 
@@ -20,6 +21,7 @@ class StocksRemoteMediator(private val service: FinService, val db: Repository) 
         state: PagingState<Int, TrendingStock>
     ): MediatorResult {
 
+        //Log.d(TAG, loadType.name)
         val page = when (loadType) {
             LoadType.REFRESH -> { 1 }
             LoadType.PREPEND -> { return MediatorResult.Success(endOfPaginationReached = true) }
@@ -43,6 +45,12 @@ class StocksRemoteMediator(private val service: FinService, val db: Repository) 
             }
             return MediatorResult.Success(endOfPaginationReached = stocks?.isEmpty() ?: true)
         } catch (e: IOException) {
+            Log.d(TAG,e.toString())
+            return MediatorResult.Error(e)
+        }catch (e: ResponseException) {
+            Log.d(TAG,e.toString())
+            return MediatorResult.Error(e)
+        } catch (e: UnresolvedAddressException) {
             Log.d(TAG,e.toString())
             return MediatorResult.Error(e)
         }
