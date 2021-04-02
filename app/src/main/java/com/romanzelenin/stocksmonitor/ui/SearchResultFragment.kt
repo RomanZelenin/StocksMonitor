@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.DiffUtil
@@ -27,7 +28,7 @@ class SearchResultFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
 
 
-    var stocksAdapter: StocksAdapter? = null
+    lateinit var stocksPagerAdapter: StocksPagerAdapter
     var dataSet = mutableListOf<Stock>()
 
 
@@ -48,7 +49,7 @@ class SearchResultFragment : Fragment() {
                  adapter = stocksAdapter
              }
      */
-        val stocksPagerAdapter =
+      stocksPagerAdapter =
             StocksPagerAdapter(viewModel, object : DiffUtil.ItemCallback<Stock>() {
                 override fun areItemsTheSame(
                     oldItem: Stock,
@@ -78,15 +79,10 @@ class SearchResultFragment : Fragment() {
         }
     }
 
-    private fun sendQuery(query: String) {
-        /*  viewModel.searchStocks(query, query).observe(viewLifecycleOwner) {
-              dataSet.clear()
-              dataSet.addAll(it)
-              stocksAdapter?.notifyDataSetChanged()
-              binding.dataNotFound.isVisible = dataSet.isEmpty()
-
-          }*/
-        Toast.makeText(requireContext(), query, Toast.LENGTH_SHORT).show()
+    private suspend fun sendQuery(query: String) {
+       viewModel.searchStocks(query,query).asLiveData().observe(viewLifecycleOwner){
+            stocksPagerAdapter.submitData(lifecycle, it)
+        }
     }
 }
 

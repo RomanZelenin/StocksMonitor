@@ -118,9 +118,11 @@ class Repository(private val context: Context) {
     }.flow
 
 
-    fun searchStock(ticker:String, companyName:String) = liveData {
-        emitSource( localSource.stockDao().searchStock(ticker, companyName))
-    }
+    fun searchStock(ticker:String, companyName:String) = Pager(
+        config = PagingConfig(pageSize = 25),
+    ){
+        localSource.stockDao().searchStock(ticker, companyName)
+    }.flow
 
 
     fun saveSearchRequest(query: String) {
