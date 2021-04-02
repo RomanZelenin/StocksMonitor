@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.ExperimentalPagingApi
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
@@ -14,6 +15,7 @@ class MainActivityViewModel(application: Application, private val repository: Re
     private val TAG = MainActivityViewModel::class.java.name
 
     val searchedRequests = repository.searchedRequests as LiveData<ArrayDeque<String>>
+    val searchQuery = MutableLiveData<String>()
 
     fun getUnicodeSymbolCurrency(currency: String): String? {
         return repository.countryToCurrency.value[currency]

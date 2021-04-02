@@ -12,10 +12,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.romanzelenin.stocksmonitor.databinding.ActivityMainBinding
 import com.romanzelenin.stocksmonitor.db.Repository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,16 +78,47 @@ class MainActivity : AppCompatActivity() {
                          }*/
                 }
             }
+
+
+
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
+                var queryJob: Job? = null
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    queryJob?.cancel()
                     if (navController.currentDestination?.id != R.id.searchResultFragment) {
                         navController.navigate(R.id.action_searchFragment_to_searchResultFragment)
+                    }
+                    query.trim().let {
+                        if (it != viewModel.searchQuery.value) {
+                            viewModel.saveSearchRequest(it)
+                            viewModel.searchQuery.postValue(it)
+                        }
                     }
                     return true
                 }
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    return false
+                override fun onQueryTextChange(newText: String): Boolean {
+                    queryJob?.cancel()
+                    val query = newText.trim()
+                    if (query.isNotBlank() && navController.currentDestination?.id != R.id.searchResultFragment) {
+                        queryJob = lifecycleScope.launch {
+                            delay(1000)
+                            viewModel.searchQuery.postValue(query)
+                            viewModel.saveSearchRequest(query)
+                            navController.navigate(R.id.action_searchFragment_to_searchResultFragment)
+                        }
+                    } else if (query.isEmpty() && navController.currentDestination?.id == R.id.searchResultFragment) {
+                        navController.navigate(R.id.action_searchResultFragment_to_searchFragment)
+                    } else if (query.isNotBlank() && navController.currentDestination?.id == R.id.searchResultFragment) {
+                        if (query != viewModel.searchQuery.value) {
+                            queryJob = lifecycleScope.launch {
+                                delay(1000)
+                                viewModel.searchQuery.postValue(query)
+                                viewModel.saveSearchRequest(query)
+                            }
+                        }
+                    }
+                    return true
                 }
             })
         }
@@ -105,15 +140,21 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
-                    setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.west_back))
+                    setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this@MainActivity,
+                            R.drawable.west_back
+                        )
+                    )
                     isClickable = true
                 }
             }
         }
 
     }
-    /*   override fun onPause() {
-           super.onPause()
-           viewModel.flushSavedRequestFromMemoryToDisk()
-       }*/
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.flushSavedRequestFromMemoryToDisk()
+    }
 }

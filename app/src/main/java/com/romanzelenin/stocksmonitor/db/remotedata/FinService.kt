@@ -105,28 +105,28 @@ class FinService(pathToCacheDir:String) {
                 result = block()
                 Log.d(TAG, "$result")
                 break
-            } catch (e: ResponseException) {
+            } /*catch (e: ResponseException) {
                 Log.d(TAG, e.toString())
                 if (e.response.status == HttpStatusCode.TooManyRequests) {
-                  /*  withContext(Dispatchers.Main) {
+                  *//*  withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
                             "API limit reached.\n${e.response.status.description}.",
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                    }*/
+                    }*//*
                     delay(timeRepeatRequestMills)
                 } else
                     break
-            } catch (e: UnresolvedAddressException) {
+            }*//* catch (e: UnresolvedAddressException) {
                 Log.d(TAG, e.toString())
-                /*withContext(Dispatchers.Main) {
+                *//*withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Сheck internet connection ", Toast.LENGTH_SHORT)
                         .show()
-                }*/
+                }*//*
                 break
-            } catch (e: EOFException){
+            } */catch (e: EOFException){
                 Log.d(TAG, e.toString())
                 break
             }

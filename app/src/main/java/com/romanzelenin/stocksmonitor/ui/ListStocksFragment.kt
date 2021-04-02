@@ -66,7 +66,6 @@ class ListStocksFragment : Fragment() {
             val btnRetry = holder.retryBtn
             val txtErrorMessage = holder.errorMessage
 
-            Log.d("!!sss", loadState.toString())
             btnRetry.isVisible = loadState is LoadState.Error
             txtErrorMessage.isVisible = loadState is LoadState.Error
             progress.isVisible = loadState is LoadState.Loading

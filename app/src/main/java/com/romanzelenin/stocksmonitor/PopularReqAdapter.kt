@@ -17,12 +17,12 @@ class PopularReqAdapter(var dataSet: List<String>) :
     override fun onBindViewHolder(holder: PopularReqVH, position: Int) {
         holder.apply {
             suggestion.text = dataSet[position]
-            suggestion.setOnClickListener {
+         /*   suggestion.setOnClickListener {
                 ((it.context) as MainActivity).supportFragmentManager.beginTransaction()
                     .addToBackStack(null)
                     .replace(R.id.container, SearchResultFragment.newInstance(suggestion.text.toString()))
                     .commit()
-            }
+            }*/
         }
     }
 
