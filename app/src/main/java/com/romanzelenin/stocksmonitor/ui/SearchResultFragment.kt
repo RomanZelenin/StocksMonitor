@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
@@ -72,7 +73,10 @@ class SearchResultFragment : Fragment() {
 
     private fun sendQuery(query: String) {
         viewModel.searchStock(query, query).asLiveData().observe(viewLifecycleOwner) {
-            stocksPagerAdapter.submitData(lifecycle, it)
+            lifecycleScope.launch {
+                binding.dataNotFound.isVisible = viewModel.countSearchStockResult(query) == 0
+                stocksPagerAdapter.submitData(lifecycle, it)
+            }
         }
     }
 }

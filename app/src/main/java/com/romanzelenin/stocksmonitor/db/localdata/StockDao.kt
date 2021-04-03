@@ -46,4 +46,7 @@ interface StockDao {
     @Delete
     suspend fun removeFavourite(stock: FavouriteStock)
 
+    @Query("Select Count(*) From Stocks Where symbol like '%' || :query || '%' or shortName like '%' || :query ||'%'")
+    suspend fun getCountSearchStockResult(query: String):Int
+
 }

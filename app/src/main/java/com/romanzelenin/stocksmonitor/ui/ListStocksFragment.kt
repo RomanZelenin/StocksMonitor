@@ -14,7 +14,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.*
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
+import androidx.paging.LoadStateAdapter
+import androidx.paging.map
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +29,7 @@ import com.romanzelenin.stocksmonitor.StocksPagerAdapter
 import com.romanzelenin.stocksmonitor.databinding.ScrollingListStocksBinding
 import com.romanzelenin.stocksmonitor.db.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -127,22 +131,25 @@ class ListStocksFragment : Fragment() {
                 }
                 stocksPagerAdapter.addLoadStateListener {
                     if (it.mediator?.refresh is LoadState.NotLoading ||
-                        it.mediator?.refresh is LoadState.Error)   {
+                        it.mediator?.refresh is LoadState.Error
+                    ) {
                         _binding?.swipeContainer?.isRefreshing = false
                     }
-
                 }
 
-                viewModel.getTrendingStocks().asLiveData().observe(viewLifecycleOwner, {
+                viewModel.getTrendingStocks.observe(viewLifecycleOwner, {
                     lifecycleScope.launch {
-                        _binding?.apply {
-                            swipeUpContainer.isVisible = viewModel.getCountTrendingStock() == 0
-                        }
                         stocksPagerAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!.apply {
                                 isFavourite = viewModel.isFavouriteStock(it.symbol)
                             }
                         })
+                        lifecycleScope.launch {
+                            delay(100)
+                            _binding?.apply {
+                                swipeUpContainer.isVisible = viewModel.getCountTrendingStock() == 0
+                            }
+                        }
                     }
                 })
 

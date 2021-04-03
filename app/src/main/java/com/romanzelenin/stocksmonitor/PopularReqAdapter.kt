@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
-import com.romanzelenin.stocksmonitor.ui.SearchResultFragment
 
-class PopularReqAdapter(var dataSet: List<String>) :
+class PopularReqAdapter(var dataSet: List<String>, private val searchView: SearchView) :
     RecyclerView.Adapter<PopularReqAdapter.PopularReqVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularReqVH {
@@ -17,14 +17,12 @@ class PopularReqAdapter(var dataSet: List<String>) :
     override fun onBindViewHolder(holder: PopularReqVH, position: Int) {
         holder.apply {
             suggestion.text = dataSet[position]
-         /*   suggestion.setOnClickListener {
-                ((it.context) as MainActivity).supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.container, SearchResultFragment.newInstance(suggestion.text.toString()))
-                    .commit()
-            }*/
+            suggestion.setOnClickListener {
+                searchView.setQuery(dataSet[position],true)
+            }
         }
     }
+
 
     override fun getItemCount(): Int {
         return dataSet.size

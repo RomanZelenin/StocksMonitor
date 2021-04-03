@@ -15,9 +15,8 @@ import com.romanzelenin.stocksmonitor.StocksRemoteMediator
 import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
+import io.ktor.client.features.*
 import io.ktor.util.network.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.collections.set
 
@@ -41,7 +40,6 @@ class Repository(private val context: Context) {
     }
 
     val popularRequests = liveData(timeoutInMs = 500) {
-        withContext(Dispatchers.Default) {
             localSource.getPopularRequestDao()
                 .getAll().map { it.map { it.name } }.let { popularRequests ->
                     emitSource(popularRequests)
@@ -55,8 +53,9 @@ class Repository(private val context: Context) {
                 }
             } catch (e: UnresolvedAddressException) {
                 Log.d(TAG, e.toString())
+            }catch (e: ClientRequestException) {
+                Log.d(TAG, e.toString())
             }
-        }
     }
 
     val countryToCurrency = lazy {
@@ -146,6 +145,10 @@ class Repository(private val context: Context) {
 
     suspend fun getCountTrendingStock(): Int {
         return localSource.stockDao().getCountTrendingStock()
+    }
+
+   suspend fun countSearchStockResult(query: String):Int{
+        return localSource.stockDao().getCountSearchStockResult(query)
     }
 
     fun saveSearchRequest(query: String) {

@@ -1,10 +1,9 @@
 package com.romanzelenin.stocksmonitor
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.cachedIn
 import com.romanzelenin.stocksmonitor.db.Repository
 
 class MainActivityViewModel(application: Application, private val repository: Repository) :
@@ -19,7 +18,7 @@ class MainActivityViewModel(application: Application, private val repository: Re
     }
 
     @ExperimentalPagingApi
-    fun getTrendingStocks() = repository.trendingStocks
+    val getTrendingStocks = repository.trendingStocks.asLiveData().cachedIn(this)
 
     @ExperimentalPagingApi
     fun getFavouriteStocks() = repository.favouriteStocks
@@ -44,6 +43,9 @@ class MainActivityViewModel(application: Application, private val repository: Re
     suspend fun getCountFavouriteStock():Int = repository.getCountFavouriteStock()
 
     suspend fun getCountTrendingStock():Int = repository.getCountTrendingStock()
+
+    suspend fun countSearchStockResult(query: String) = repository.countSearchStockResult(query)
+
 
     companion object {
         private val TAG = MainActivityViewModel::class.java.name

@@ -11,6 +11,7 @@ import com.romanzelenin.stocksmonitor.model.RemoteKey
 import com.romanzelenin.stocksmonitor.model.TrendingStock
 import io.ktor.client.features.*
 import java.io.IOException
+import java.net.ConnectException
 import java.nio.channels.UnresolvedAddressException
 
 @ExperimentalPagingApi
@@ -21,10 +22,17 @@ class StocksRemoteMediator(private val service: FinService, val db: Repository) 
         state: PagingState<Int, TrendingStock>
     ): MediatorResult {
 
-        //Log.d(TAG, loadType.name)
+        Log.d(TAG, loadType.name)
         val page = when (loadType) {
-            LoadType.REFRESH -> { 1 }
-            LoadType.PREPEND -> { return MediatorResult.Success(endOfPaginationReached = true) }
+            LoadType.REFRESH -> {
+                1
+            }
+            LoadType.PREPEND -> {
+                state.firstItemOrNull()?.symbol?.let {
+                    db.getRemoteKey(it)?.prevKey
+                }
+                    ?: return MediatorResult.Success(endOfPaginationReached = true)
+            }
             LoadType.APPEND -> {
                 state.lastItemOrNull()?.symbol?.let {
                     db.getRemoteKey(it)?.nextKey
@@ -45,18 +53,21 @@ class StocksRemoteMediator(private val service: FinService, val db: Repository) 
             }
             return MediatorResult.Success(endOfPaginationReached = stocks?.isEmpty() ?: true)
         } catch (e: IOException) {
-            Log.d(TAG,e.toString())
+            Log.d(TAG, e.toString())
             return MediatorResult.Error(e)
-        }catch (e: ResponseException) {
-            Log.d(TAG,e.toString())
+        } catch (e: ResponseException) {
+            Log.d(TAG, e.toString())
             return MediatorResult.Error(e)
         } catch (e: UnresolvedAddressException) {
-            Log.d(TAG,e.toString())
+            Log.d(TAG, e.toString())
+            return MediatorResult.Error(e)
+        } catch (e: ConnectException) {
+            Log.d(TAG, e.toString())
             return MediatorResult.Error(e)
         }
     }
 
-    companion object{
+    companion object {
         private val TAG = StocksRemoteMediator::class.java.simpleName
     }
 }
