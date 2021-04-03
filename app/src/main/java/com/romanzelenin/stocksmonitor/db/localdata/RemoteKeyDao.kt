@@ -13,9 +13,9 @@ interface RemoteKeyDao {
     suspend fun insertAll(keys: List<RemoteKey>)
 
     @Query("Select * From RemoteKey Where stock_id like :stock")
-    suspend fun getRemoteKey(stock: String): RemoteKey?
+    suspend fun getKey(stock: String): RemoteKey?
 
     @Query("Delete From RemoteKey")
-    suspend fun clearRemoteKey()
+    suspend fun clear()
 
 }

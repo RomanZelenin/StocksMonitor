@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
@@ -13,7 +12,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
-import com.romanzelenin.stocksmonitor.StocksAdapter
 import com.romanzelenin.stocksmonitor.StocksPagerAdapter
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchResultBinding
 import com.romanzelenin.stocksmonitor.model.Stock
@@ -27,10 +25,7 @@ class SearchResultFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
 
-
     lateinit var stocksPagerAdapter: StocksPagerAdapter
-    var dataSet = mutableListOf<Stock>()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,14 +37,10 @@ class SearchResultFragment : Fragment() {
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        /*
-             stocksAdapter = StocksAdapter(viewModel, dataSet)
-             binding.includeScrollingList.listStocks.apply {
-                 layoutManager = LinearLayoutManager(context)
-                 adapter = stocksAdapter
-             }
-     */
-      stocksPagerAdapter =
+        binding.includeScrollingList.swipeContainer.setOnRefreshListener {
+            binding.includeScrollingList.swipeContainer.isRefreshing = false
+        }
+        stocksPagerAdapter =
             StocksPagerAdapter(viewModel, object : DiffUtil.ItemCallback<Stock>() {
                 override fun areItemsTheSame(
                     oldItem: Stock,
@@ -74,13 +65,13 @@ class SearchResultFragment : Fragment() {
         }
         viewModel.searchQuery.observe(viewLifecycleOwner) { query ->
             lifecycleScope.launch {
-                    sendQuery(query)
+                sendQuery(query)
             }
         }
     }
 
-    private suspend fun sendQuery(query: String) {
-       viewModel.searchStocks(query,query).asLiveData().observe(viewLifecycleOwner){
+    private fun sendQuery(query: String) {
+        viewModel.searchStock(query, query).asLiveData().observe(viewLifecycleOwner) {
             stocksPagerAdapter.submitData(lifecycle, it)
         }
     }

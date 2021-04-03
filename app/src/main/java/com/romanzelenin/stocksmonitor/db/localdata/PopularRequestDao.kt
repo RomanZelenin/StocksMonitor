@@ -15,8 +15,8 @@ interface PopularRequestDao {
     suspend fun insertAll(request:List<PopularRequest>)
 
     @Query("Select * From PopularRequests")
-    fun getAllPopularRequest():LiveData<List<PopularRequest>>
+    fun getAll():LiveData<List<PopularRequest>>
 
     @Query("Delete From PopularRequests")
-    fun clearPopularRequest()
+    suspend fun clear()
 }

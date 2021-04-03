@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navController = findNavController(R.id.nav_host_fragment)
-
         binding.appBarSearch.apply {
             findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
                 setOnClickListener { onBackPressed() }
@@ -53,7 +52,8 @@ class MainActivity : AppCompatActivity() {
                 setHintTextColor(Color.BLACK)
                 typeface = ResourcesCompat.getFont(context, R.font.montserrat)
             }
-            setOnQueryTextFocusChangeListener { v, hasFocus ->
+
+            setOnQueryTextFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     background = ResourcesCompat.getDrawable(
                         resources,
@@ -73,16 +73,13 @@ class MainActivity : AppCompatActivity() {
                         R.drawable.search_view_shape,
                         null
                     )
-                    /*     if (navController.currentDestination?.id == R.id.searchFragment){
-                             navController.navigate(R.id.action_global_pager_collection)
-                         }*/
                 }
             }
 
-
-
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 var queryJob: Job? = null
+                val delayBetweenInputEventInMills = 200L
+
                 override fun onQueryTextSubmit(query: String): Boolean {
                     queryJob?.cancel()
                     if (navController.currentDestination?.id != R.id.searchResultFragment) {
@@ -90,8 +87,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     query.trim().let {
                         if (it != viewModel.searchQuery.value) {
-                            viewModel.saveSearchRequest(it)
-                            viewModel.searchQuery.postValue(it)
+                            postAndSaveQuery(query)
                         }
                     }
                     return true
@@ -100,22 +96,24 @@ class MainActivity : AppCompatActivity() {
                 override fun onQueryTextChange(newText: String): Boolean {
                     queryJob?.cancel()
                     val query = newText.trim()
-                    if (query.isNotBlank() && navController.currentDestination?.id != R.id.searchResultFragment) {
-                        queryJob = lifecycleScope.launch {
-                            delay(1000)
-                            viewModel.searchQuery.postValue(query)
-                            viewModel.saveSearchRequest(query)
-                            navController.navigate(R.id.action_searchFragment_to_searchResultFragment)
-                        }
-                    } else if (query.isEmpty() && navController.currentDestination?.id == R.id.searchResultFragment) {
-                        navController.navigate(R.id.action_searchResultFragment_to_searchFragment)
-                    } else if (query.isNotBlank() && navController.currentDestination?.id == R.id.searchResultFragment) {
-                        if (query != viewModel.searchQuery.value) {
+                    if (query.isNotBlank()) {
+                        if (navController.currentDestination?.id != R.id.searchResultFragment) {
                             queryJob = lifecycleScope.launch {
-                                delay(1000)
-                                viewModel.searchQuery.postValue(query)
-                                viewModel.saveSearchRequest(query)
+                                delay(delayBetweenInputEventInMills)
+                                postAndSaveQuery(query)
+                                navController.navigate(R.id.action_searchFragment_to_searchResultFragment)
                             }
+                        } else {
+                            if (query != viewModel.searchQuery.value) {
+                                queryJob = lifecycleScope.launch {
+                                    delay(delayBetweenInputEventInMills)
+                                    postAndSaveQuery(query)
+                                }
+                            }
+                        }
+                    } else if (query.isEmpty()) {
+                        if (navController.currentDestination?.id == R.id.searchResultFragment) {
+                            navController.navigate(R.id.action_searchResultFragment_to_searchFragment)
                         }
                     }
                     return true
@@ -140,17 +138,24 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon).apply {
+                    isClickable = true
                     setImageDrawable(
                         ContextCompat.getDrawable(
-                            this@MainActivity,
+                            context,
                             R.drawable.west_back
                         )
                     )
-                    isClickable = true
                 }
             }
         }
 
+    }
+
+    private fun postAndSaveQuery(query: String) {
+        viewModel.apply {
+            searchQuery.postValue(query)
+            saveSearchRequest(query)
+        }
     }
 
     override fun onPause() {

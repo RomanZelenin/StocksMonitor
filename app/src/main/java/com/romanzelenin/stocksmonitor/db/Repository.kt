@@ -1,7 +1,6 @@
 package com.romanzelenin.stocksmonitor.db
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
@@ -15,6 +14,8 @@ import com.romanzelenin.stocksmonitor.StocksRemoteMediator
 import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.collections.set
 
@@ -22,7 +23,8 @@ class Repository(private val context: Context) {
     private val remoteSource = FinService.getInstance(context)
     private val localSource = MonitorStocksDatabase.getInstance(context)
 
-    private val _searchedRequests = ArrayDeque<String>(20)
+    private val maxAmountSearchedRequests = 20
+    private val _searchedRequests = ArrayDeque<String>(maxAmountSearchedRequests)
     val searchedRequests = MutableLiveData(_searchedRequests)
 
 
@@ -36,15 +38,18 @@ class Repository(private val context: Context) {
         }
     }
 
-
     val popularRequests = liveData(timeoutInMs = 500) {
-        emitSource(localSource.getPopularRequestDao()
-            .getAllPopularRequest().map { it.map { it.name } })
-        val resp = remoteSource.popularRequests().map { PopularRequest(it) }
-
-        localSource.withTransaction {
-            localSource.getPopularRequestDao().clearPopularRequest()
-            localSource.getPopularRequestDao().insertAll(resp)
+        withContext(Dispatchers.Default) {
+            localSource.getPopularRequestDao()
+                .getAll().map { it.map { it.name } }.let { popularRequests ->
+                    emitSource(popularRequests)
+                }
+            remoteSource.popularRequests().map { PopularRequest(it) }.let { popularRequests ->
+                localSource.withTransaction {
+                    localSource.getPopularRequestDao().clear()
+                    localSource.getPopularRequestDao().insertAll(popularRequests)
+                }
+            }
         }
     }
 
@@ -67,11 +72,11 @@ class Repository(private val context: Context) {
     }
 
     suspend fun removeFromFavourite(symbol: String) {
-        localSource.stockDao().removeFavouriteStock(FavouriteStock(symbol))
+        localSource.stockDao().removeFavourite(FavouriteStock(symbol))
     }
 
     suspend fun addToFavourite(symbol: String) {
-        localSource.stockDao().insertFavouriteStock(FavouriteStock(symbol))
+        localSource.stockDao().insertFavourite(FavouriteStock(symbol))
     }
 
     fun refreshListTrendingStocks() {
@@ -79,25 +84,30 @@ class Repository(private val context: Context) {
     }
 
     suspend fun getRemoteKey(stock: String) =
-        localSource.getRemoteKeyDao().getRemoteKey(stock)
+        localSource.getRemoteKeyDao().getKey(stock)
 
     suspend fun clearListTrendingStocks() {
-        localSource.withTransaction {
-            localSource.getRemoteKeyDao().clearRemoteKey()
-            localSource.stockDao().clearTrendingStocks()
+        with(localSource){
+            withTransaction {
+                getRemoteKeyDao().clear()
+                stockDao().clearTrendingStocks()
+            }
         }
     }
 
     suspend fun addTrendingStocksWithRemoteKeys(stocks: List<Stock>, key: List<RemoteKey>) {
-        localSource.withTransaction {
-            localSource.getRemoteKeyDao().insertAll(key)
-            localSource.stockDao().insertAllStocks(stocks)
-            localSource.stockDao().insertAllTrendingStocks(stocks.map { TrendingStock(it.symbol) })
+        with(localSource) {
+            withTransaction {
+                getRemoteKeyDao().insertAll(key)
+                stockDao().insertAllStocks(stocks)
+                stockDao().insertAllTrendingStocks(stocks.map { TrendingStock(it.symbol) })
+            }
         }
     }
 
-    suspend fun getStock(symbol: String) =
-        localSource.stockDao().getStock(symbol)
+    suspend fun getStock(symbol: String): Stock? {
+        return localSource.stockDao().getStock(symbol)
+    }
 
 
     private var pagingSourceTradingStocks: PagingSource<Int, TrendingStock>? = null
@@ -118,17 +128,24 @@ class Repository(private val context: Context) {
     }.flow
 
 
-    fun searchStock(ticker:String, companyName:String) = Pager(
+    fun searchStock(ticker: String, companyName: String) = Pager(
         config = PagingConfig(pageSize = 25),
-    ){
+    ) {
         localSource.stockDao().searchStock(ticker, companyName)
     }.flow
 
+    suspend fun getCountFavouriteStock():Int {
+        return localSource.stockDao().getCountFavouriteStock()
+    }
+
+    suspend fun getCountStock():Int {
+        return localSource.stockDao().getCountStock()
+    }
 
     fun saveSearchRequest(query: String) {
         val request = PopularRequest(query)
         if (!_searchedRequests.contains(request.name)) {
-            if (_searchedRequests.size == 20) {
+            if (_searchedRequests.size == maxAmountSearchedRequests) {
                 _searchedRequests.removeLast()
                 _searchedRequests.addFirst(request.name)
             } else {
@@ -137,13 +154,14 @@ class Repository(private val context: Context) {
             searchedRequests.postValue(_searchedRequests)
         }
     }
-    fun flushSavedRequestFromMemoryToDisk(){
+
+    fun flushSavedRequestFromMemoryToDisk() {
         File(context.filesDir.absolutePath + File.pathSeparator + "you_ve_search.txt").apply {
             delete()
             val buffer = bufferedWriter()
-            _searchedRequests.forEachIndexed { index, item->
+            _searchedRequests.forEachIndexed { index, item ->
                 buffer.append(item)
-                if (index < _searchedRequests.size-1){
+                if (index < _searchedRequests.size - 1) {
                     buffer.appendLine()
                 }
             }

@@ -1,6 +1,5 @@
 package com.romanzelenin.stocksmonitor.db.localdata
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.romanzelenin.stocksmonitor.model.FavouriteStock
@@ -19,6 +18,9 @@ interface StockDao {
     @Query("Select * From Stocks Where symbol like :symbol")
     suspend fun getStock(symbol: String): Stock?
 
+    @Query("Select Count(*) From Stocks")
+    suspend fun getCountStock(): Int
+
     @Query("Select * From TrendingStocks")
     fun getAllTrendingStocks(): PagingSource<Int, TrendingStock>
 
@@ -35,10 +37,13 @@ interface StockDao {
     @Query("Select * From FavouriteStocks Order By symbol ASC")
     fun getAllFavouriteStock(): PagingSource<Int, FavouriteStock>
 
+    @Query("Select Count(*) From FavouriteStocks")
+    suspend fun getCountFavouriteStock(): Int
+
     @Insert
-    suspend fun insertFavouriteStock(stock: FavouriteStock)
+    suspend fun insertFavourite(stock: FavouriteStock)
 
     @Delete
-    suspend fun removeFavouriteStock(stock: FavouriteStock)
+    suspend fun removeFavourite(stock: FavouriteStock)
 
 }

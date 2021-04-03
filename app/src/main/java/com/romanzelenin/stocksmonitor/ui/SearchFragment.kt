@@ -42,7 +42,7 @@ class SearchFragment : Fragment() {
                     })
                 }
                 val youVeSearchAdapter = initRecycler(recyclerYouVeSear)
-                viewModel.searchedRequests.observe(viewLifecycleOwner, {
+                viewModel.youSearchedForThisRequests.observe(viewLifecycleOwner, {
                     youVeSearchAdapter.dataSet = it
                     recyclerYouVeSear.adapter?.notifyDataSetChanged()
                 })

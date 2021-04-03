@@ -19,7 +19,7 @@ import kotlin.math.abs
 import kotlin.math.round
 
 class StocksPagerAdapter(
-    private val model: MainActivityViewModel,
+    private val viewModel: MainActivityViewModel,
     diff: DiffUtil.ItemCallback<Stock>,
 ) :
     PagingDataAdapter<Stock, StocksPagerAdapter.StocksRecyclerVH>(diff) {
@@ -82,8 +82,8 @@ class StocksPagerAdapter(
                     }
                 }
 
-                model.viewModelScope.launch {
-                    if (model.isFavouriteStock(item.symbol)) {
+                viewModel.viewModelScope.launch {
+                    if (viewModel.isFavouriteStock(item.symbol)) {
                         setStateStarBtn(star, true)
                     } else {
                         setStateStarBtn(star, false)
@@ -91,19 +91,19 @@ class StocksPagerAdapter(
                 }
 
                 star.setOnClickListener {
-                    model.viewModelScope.launch {
-                        if (model.isFavouriteStock(item.symbol)) {
+                    viewModel.viewModelScope.launch {
+                        if (viewModel.isFavouriteStock(item.symbol)) {
                             setStateStarBtn(star, false)
-                            model.removeFromFavourite(item.symbol)
+                            viewModel.removeFromFavourite(item.symbol)
                         } else {
                             setStateStarBtn(star, true)
-                            model.addToFavourite(item.symbol)
+                            viewModel.addToFavourite(item.symbol)
                         }
-                        model.refreshListTrendingStocks()
+                        viewModel.refreshListTrendingStocks()
                     }
                 }
 
-                val currencySymbol = model.getUnicodeSymbolCurrency(item.currency)
+                val currencySymbol = viewModel.getUnicodeSymbolCurrency(item.currency)
                 stockPrice.text =
                     "$currencySymbol${round(item.regularMarketPrice * 100) / 100}"
 
@@ -136,10 +136,7 @@ class StocksPagerAdapter(
                     setTextColor(color)
                 }
             }
-        } else {
-
         }
-
     }
 
     class StocksRecyclerVH(itemView: View) : RecyclerView.ViewHolder(itemView) {

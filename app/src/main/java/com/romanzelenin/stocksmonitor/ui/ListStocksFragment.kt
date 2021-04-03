@@ -15,10 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.LoadState
-import androidx.paging.LoadStateAdapter
-import androidx.paging.map
+import androidx.paging.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -130,31 +127,42 @@ class ListStocksFragment : Fragment() {
                     stocksPagerAdapter.refresh()
                 }
                 stocksPagerAdapter.addLoadStateListener {
-                    if (it.mediator?.refresh is LoadState.NotLoading) {
+                    if (it.mediator?.refresh is LoadState.NotLoading ||
+                        it.mediator?.refresh is LoadState.Error)   {
                         _binding?.swipeContainer?.isRefreshing = false
                     }
+
                 }
-                lifecycleScope.launch {
-                    viewModel.getTrendingStocks().asLiveData().observe(viewLifecycleOwner, {
+
+                viewModel.getTrendingStocks().asLiveData().observe(viewLifecycleOwner, {
+                    lifecycleScope.launch {
+                        _binding?.apply {
+                            swipeUpContainer.isVisible = viewModel.getCountStock() == 0
+                        }
                         stocksPagerAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!.apply {
                                 isFavourite = viewModel.isFavouriteStock(it.symbol)
                             }
                         })
-                    })
-                }
+                    }
+                })
+
             } else if (getInt(ARG_TAB_NAME) == PagerCollectionAdapter.FAVOURITE_TAB) {
-                _binding?.swipeContainer?.setOnRefreshListener {
-                    _binding?.swipeContainer?.isRefreshing = false
+                _binding?.apply {
+                    swipeContainer.setOnRefreshListener {
+                        swipeContainer.isRefreshing = false
+                    }
                 }
-                lifecycleScope.launch {
-                    viewModel.getFavouriteStocks().asLiveData().observe(viewLifecycleOwner, {
+                viewModel.getFavouriteStocks().asLiveData().observe(viewLifecycleOwner, {
+                    lifecycleScope.launch {
+                        _binding?.apply {
+                            noFavouriteContainer.isVisible = viewModel.getCountFavouriteStock() == 0
+                        }
                         stocksPagerAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!
                         })
-                    })
-                }
-
+                    }
+                })
             }
         }
     }
