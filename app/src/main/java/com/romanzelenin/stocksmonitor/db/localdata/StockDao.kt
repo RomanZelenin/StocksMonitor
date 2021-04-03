@@ -18,8 +18,8 @@ interface StockDao {
     @Query("Select * From Stocks Where symbol like :symbol")
     suspend fun getStock(symbol: String): Stock?
 
-    @Query("Select Count(*) From Stocks")
-    suspend fun getCountStock(): Int
+    @Query("Select Count(*) From TrendingStocks")
+    suspend fun getCountTrendingStock(): Int
 
     @Query("Select * From TrendingStocks")
     fun getAllTrendingStocks(): PagingSource<Int, TrendingStock>

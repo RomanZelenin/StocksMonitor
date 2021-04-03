@@ -36,10 +36,10 @@ class SearchFragment : Fragment() {
             binding.apply {
                 val popularReqAdapter = initRecycler(recyclerPopularReq)
                 lifecycleScope.launch {
-                    viewModel.popularRequests.observe(viewLifecycleOwner, {
+                        viewModel.popularRequests.observe(viewLifecycleOwner, {
                             popularReqAdapter.dataSet = it
                             recyclerPopularReq.adapter?.notifyDataSetChanged()
-                    })
+                        })
                 }
                 val youVeSearchAdapter = initRecycler(recyclerYouVeSear)
                 viewModel.youSearchedForThisRequests.observe(viewLifecycleOwner, {
@@ -57,4 +57,7 @@ class SearchFragment : Fragment() {
         return adapter
     }
 
+    companion object{
+        private val TAG = SearchFragment::class.java.simpleName
+    }
 }

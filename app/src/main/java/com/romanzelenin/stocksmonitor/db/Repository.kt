@@ -1,6 +1,7 @@
 package com.romanzelenin.stocksmonitor.db
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
@@ -14,6 +15,7 @@ import com.romanzelenin.stocksmonitor.StocksRemoteMediator
 import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.db.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
+import io.ktor.util.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -44,11 +46,15 @@ class Repository(private val context: Context) {
                 .getAll().map { it.map { it.name } }.let { popularRequests ->
                     emitSource(popularRequests)
                 }
-            remoteSource.popularRequests().map { PopularRequest(it) }.let { popularRequests ->
-                localSource.withTransaction {
-                    localSource.getPopularRequestDao().clear()
-                    localSource.getPopularRequestDao().insertAll(popularRequests)
+            try {
+                remoteSource.popularRequests().map { PopularRequest(it) }.let { popularRequests ->
+                    localSource.withTransaction {
+                        localSource.getPopularRequestDao().clear()
+                        localSource.getPopularRequestDao().insertAll(popularRequests)
+                    }
                 }
+            } catch (e: UnresolvedAddressException) {
+                Log.d(TAG, e.toString())
             }
         }
     }
@@ -87,7 +93,7 @@ class Repository(private val context: Context) {
         localSource.getRemoteKeyDao().getKey(stock)
 
     suspend fun clearListTrendingStocks() {
-        with(localSource){
+        with(localSource) {
             withTransaction {
                 getRemoteKeyDao().clear()
                 stockDao().clearTrendingStocks()
@@ -134,12 +140,12 @@ class Repository(private val context: Context) {
         localSource.stockDao().searchStock(ticker, companyName)
     }.flow
 
-    suspend fun getCountFavouriteStock():Int {
+    suspend fun getCountFavouriteStock(): Int {
         return localSource.stockDao().getCountFavouriteStock()
     }
 
-    suspend fun getCountStock():Int {
-        return localSource.stockDao().getCountStock()
+    suspend fun getCountTrendingStock(): Int {
+        return localSource.stockDao().getCountTrendingStock()
     }
 
     fun saveSearchRequest(query: String) {
@@ -167,5 +173,9 @@ class Repository(private val context: Context) {
             }
             buffer.flush()
         }
+    }
+
+    companion object {
+        private val TAG = Repository::class.java.simpleName
     }
 }

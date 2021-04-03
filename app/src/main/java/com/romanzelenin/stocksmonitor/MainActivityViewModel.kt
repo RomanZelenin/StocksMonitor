@@ -43,7 +43,7 @@ class MainActivityViewModel(application: Application, private val repository: Re
 
     suspend fun getCountFavouriteStock():Int = repository.getCountFavouriteStock()
 
-    suspend fun getCountStock():Int = repository.getCountStock()
+    suspend fun getCountTrendingStock():Int = repository.getCountTrendingStock()
 
     companion object {
         private val TAG = MainActivityViewModel::class.java.name

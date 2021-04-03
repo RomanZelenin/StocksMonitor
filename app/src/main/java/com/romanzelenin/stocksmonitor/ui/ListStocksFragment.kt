@@ -1,7 +1,6 @@
 package com.romanzelenin.stocksmonitor.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -137,7 +136,7 @@ class ListStocksFragment : Fragment() {
                 viewModel.getTrendingStocks().asLiveData().observe(viewLifecycleOwner, {
                     lifecycleScope.launch {
                         _binding?.apply {
-                            swipeUpContainer.isVisible = viewModel.getCountStock() == 0
+                            swipeUpContainer.isVisible = viewModel.getCountTrendingStock() == 0
                         }
                         stocksPagerAdapter.submitData(lifecycle, it.map {
                             viewModel.getStock(it.symbol)!!.apply {
