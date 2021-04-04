@@ -5,6 +5,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.tabs.TabLayoutMediator
 import com.romanzelenin.stocksmonitor.databinding.ActivityCardBinding
 
 class CardActivity : AppCompatActivity() {
@@ -27,23 +28,43 @@ class CardActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.ticker_name).text = intent.getStringExtra("ticker_name")
             findViewById<TextView>(R.id.short_name).text = intent.getStringExtra("short_name")
 
-            if(intent.getBooleanExtra("favourite", false)){
+            if (intent.getBooleanExtra("favourite", false)) {
                 findViewById<ImageButton>(R.id.star_btn).setImageDrawable(
                     ResourcesCompat.getDrawable(
-                    resources,
-                    android.R.drawable.btn_star_big_on,
-                    null
-                ))
-            }else{
+                        resources,
+                        android.R.drawable.btn_star_big_on,
+                        null
+                    )
+                )
+            } else {
                 findViewById<ImageButton>(R.id.star_btn).setImageDrawable(
                     ResourcesCompat.getDrawable(
                         resources,
                         android.R.drawable.btn_star_big_off,
                         null
-                    ))
+                    )
+                )
             }
-
-
         }
+
+
+        binding.apply {
+            pager.adapter = CardPagerAdapter(this@CardActivity)
+            TabLayoutMediator(tabLayout, pager) { tab, position ->
+                when (position) {
+                    0 -> {
+                        tab.text = "Chart"
+                    }
+                    1 -> {
+                        tab.text = "Summary"
+                    }
+                    else -> {
+                        tab.text = "News"
+                    }
+                }
+
+            }.attach()
+        }
+
     }
 }
