@@ -12,6 +12,9 @@
     <string name="no_favourite">No favourite</string>
     <string name="swipe_up_for_refresh">Swipe up for refresh</string>
     <string name="no_requests">No requests</string>
+    <string name="chart">Chart</string>
+    <string name="summary">Summary</string>
+    <string name="news">News</string>
     <string-array name="countryToCurrency">
         <item>AUD,\u24</item>
         <item>ANG,\u192</item>

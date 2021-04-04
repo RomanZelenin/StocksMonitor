@@ -1,6 +1,7 @@
 package com.romanzelenin.stocksmonitor.ui.liststocks
 
 import android.net.Uri
+import android.os.Bundle
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +58,13 @@ class StocksPagerAdapter(
         val item = getItem(position)
 
         if (item != null) {
+            holder.itemView.setOnClickListener {
+                it.findNavController().navigate(R.id.cardActivity, Bundle().apply {
+                    putString("ticker_name", item.symbol)
+                    putString("short_name", item.shortName)
+                    putBoolean("favourite", item.isFavourite ?: false)
+                })
+            }
             holder.apply {
 
                 if (item.imgSrc != null)
@@ -86,8 +95,10 @@ class StocksPagerAdapter(
 
                 viewModel.viewModelScope.launch {
                     if (viewModel.isFavouriteStock(item.symbol)) {
+                        item.isFavourite = true
                         setStateStarBtn(star, true)
                     } else {
+                        item.isFavourite = false
                         setStateStarBtn(star, false)
                     }
                 }

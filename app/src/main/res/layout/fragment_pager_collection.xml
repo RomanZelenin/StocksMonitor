@@ -18,7 +18,7 @@
             app:layout_collapseMode="pin"
             app:layout_scrollFlags="scroll|enterAlways|exitUntilCollapsed"
             app:tabMode="scrollable"
-            app:tabTextAppearance="@style/tabStyle"
+            app:tabTextAppearance="@style/main_tab_style"
             app:tabTextColor="@color/tab_color_state">
 
             <com.google.android.material.tabs.TabItem

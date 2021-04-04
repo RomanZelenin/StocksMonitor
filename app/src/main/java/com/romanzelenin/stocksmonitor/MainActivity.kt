@@ -148,7 +148,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     private fun postAndSaveQuery(query: String) {

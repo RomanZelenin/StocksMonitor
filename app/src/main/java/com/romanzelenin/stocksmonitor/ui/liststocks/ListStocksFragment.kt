@@ -22,12 +22,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
-import com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionAdapter
-import com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionAdapter.Companion.ARG_TAB_NAME
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.ScrollingListStocksBinding
-import com.romanzelenin.stocksmonitor.repository.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
+import com.romanzelenin.stocksmonitor.repository.Repository
+import com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionAdapter
+import com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionAdapter.Companion.ARG_TAB_NAME
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -116,7 +116,7 @@ class ListStocksFragment : Fragment() {
 
         _binding?.apply {
             listStocks.apply {
-                setHasFixedSize(true)
+                //setHasFixedSize(true)
                 layoutManager = LinearLayoutManager(view.context)
                 adapter =
                     stocksPagerAdapter.withLoadStateFooter(StocksLoadStateAdapter { stocksPagerAdapter.retry() })
