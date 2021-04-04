@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.ui
+package com.romanzelenin.stocksmonitor.ui.search
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
-import com.romanzelenin.stocksmonitor.PopularReqAdapter
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchBinding
 

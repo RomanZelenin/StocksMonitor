@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui.liststocks
 
 import android.net.Uri
 import android.text.Html
@@ -13,6 +13,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.romanzelenin.stocksmonitor.MainActivityViewModel
+import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.model.Stock
 import kotlinx.coroutines.launch
 import kotlin.math.abs

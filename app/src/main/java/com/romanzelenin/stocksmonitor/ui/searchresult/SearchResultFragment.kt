@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.ui
+package com.romanzelenin.stocksmonitor.ui.searchresult
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +13,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
-import com.romanzelenin.stocksmonitor.StocksPagerAdapter
+import com.romanzelenin.stocksmonitor.ui.liststocks.StocksPagerAdapter
 import com.romanzelenin.stocksmonitor.databinding.FragmentSearchResultBinding
 import com.romanzelenin.stocksmonitor.model.Stock
 import kotlinx.coroutines.launch

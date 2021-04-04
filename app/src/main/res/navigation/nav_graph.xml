@@ -6,7 +6,7 @@
     app:startDestination="@id/pager_collection">
     <fragment
         android:id="@+id/pager_collection"
-        android:name="com.romanzelenin.stocksmonitor.ui.PagerCollectionFragment"
+        android:name="com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionFragment"
         android:label="fragment_pager_collection"
         tools:layout="@layout/fragment_pager_collection" >
         <action
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.romanzelenin.stocksmonitor.ui.SearchFragment"
+        android:name="com.romanzelenin.stocksmonitor.ui.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchResultFragment"
-        android:name="com.romanzelenin.stocksmonitor.ui.SearchResultFragment"
+        android:name="com.romanzelenin.stocksmonitor.ui.searchresult.SearchResultFragment"
         android:label="SearchResultFragment" >
         <action
             android:id="@+id/action_searchResultFragment_to_searchFragment"

@@ -1,12 +1,11 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.repository.remotedata
 
 import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.romanzelenin.stocksmonitor.db.Repository
-import com.romanzelenin.stocksmonitor.db.remotedata.FinService
+import com.romanzelenin.stocksmonitor.repository.Repository
 import com.romanzelenin.stocksmonitor.model.RemoteKey
 import com.romanzelenin.stocksmonitor.model.TrendingStock
 import io.ktor.client.features.*

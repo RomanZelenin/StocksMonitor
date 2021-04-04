@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.db.localdata
+package com.romanzelenin.stocksmonitor.repository.localdata
 
 import androidx.paging.PagingSource
 import androidx.room.*

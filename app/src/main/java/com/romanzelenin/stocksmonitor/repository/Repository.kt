@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.db
+package com.romanzelenin.stocksmonitor.repository
 
 import android.content.Context
 import android.util.Log
@@ -11,9 +11,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.romanzelenin.stocksmonitor.R
-import com.romanzelenin.stocksmonitor.StocksRemoteMediator
-import com.romanzelenin.stocksmonitor.db.localdata.MonitorStocksDatabase
-import com.romanzelenin.stocksmonitor.db.remotedata.FinService
+import com.romanzelenin.stocksmonitor.repository.remotedata.StocksRemoteMediator
+import com.romanzelenin.stocksmonitor.repository.localdata.MonitorStocksDatabase
+import com.romanzelenin.stocksmonitor.repository.remotedata.FinService
 import com.romanzelenin.stocksmonitor.model.*
 import io.ktor.client.features.*
 import io.ktor.util.network.*

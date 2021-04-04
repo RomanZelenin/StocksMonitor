@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.ui
+package com.romanzelenin.stocksmonitor.ui.liststocks
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,12 +22,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.romanzelenin.stocksmonitor.MainActivityViewModel
-import com.romanzelenin.stocksmonitor.PagerCollectionAdapter
-import com.romanzelenin.stocksmonitor.PagerCollectionAdapter.Companion.ARG_TAB_NAME
+import com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionAdapter
+import com.romanzelenin.stocksmonitor.ui.pagercollection.PagerCollectionAdapter.Companion.ARG_TAB_NAME
 import com.romanzelenin.stocksmonitor.R
-import com.romanzelenin.stocksmonitor.StocksPagerAdapter
 import com.romanzelenin.stocksmonitor.databinding.ScrollingListStocksBinding
-import com.romanzelenin.stocksmonitor.db.Repository
+import com.romanzelenin.stocksmonitor.repository.Repository
 import com.romanzelenin.stocksmonitor.model.Stock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -88,7 +87,7 @@ class ListStocksFragment : Fragment() {
             return PagerStateViewHolder(view)
         }
 
-        class PagerStateViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        class PagerStateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val progressBar: ProgressBar = view.findViewById(R.id.progress)
             val retryBtn: Button = view.findViewById(R.id.btnRetry)
             val errorMessage: TextView = view.findViewById(R.id.errorMessage)

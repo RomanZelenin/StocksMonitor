@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui.search
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
+import com.romanzelenin.stocksmonitor.R
 
 class PopularReqAdapter(var dataSet: List<String>, private val searchView: SearchView) :
     RecyclerView.Adapter<PopularReqAdapter.PopularReqVH>() {

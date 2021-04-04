@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.cachedIn
-import com.romanzelenin.stocksmonitor.db.Repository
+import com.romanzelenin.stocksmonitor.repository.Repository
 
 class MainActivityViewModel(application: Application, private val repository: Repository) :
     AndroidViewModel(application) {

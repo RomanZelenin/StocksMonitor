@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.db.remotedata
+package com.romanzelenin.stocksmonitor.repository.remotedata
 
 import android.content.Context
 import android.util.Log
@@ -11,10 +11,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.utils.*
 import io.ktor.http.*
-import kotlinx.coroutines.delay
 import java.io.EOFException
 import java.io.File
-import java.nio.channels.UnresolvedAddressException
 
 class FinService(pathToCacheDir:String) {
     private val cacheImagesFolder = "images"

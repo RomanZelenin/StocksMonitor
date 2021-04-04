@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.romanzelenin.stocksmonitor.databinding.ActivityMainBinding
-import com.romanzelenin.stocksmonitor.db.Repository
+import com.romanzelenin.stocksmonitor.repository.Repository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

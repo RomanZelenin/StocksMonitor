@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.ui
+package com.romanzelenin.stocksmonitor.ui.pagercollection
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.romanzelenin.stocksmonitor.PagerCollectionAdapter
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.FragmentPagerCollectionBinding
 
