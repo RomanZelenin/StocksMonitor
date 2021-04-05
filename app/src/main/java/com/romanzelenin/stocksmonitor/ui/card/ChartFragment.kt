@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -35,10 +35,10 @@ class ChartFragment : Fragment() {
         fun newInstance() = ChartFragment()
     }
 
-    private val viewModel: ChartViewModel by viewModels {
+    private val viewModel: CardActivityViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return ChartViewModel(Repository(requireContext())) as T
+                return CardActivityViewModel(Repository(requireContext())) as T
             }
         }
     }
@@ -66,8 +66,9 @@ class ChartFragment : Fragment() {
                         viewModel.getUnicodeSymbolCurrency(stock.currency) + stock.regularMarketPrice.toString()
                     val changePrice =
                         round((stock.regularMarketPrice - stock.regularMarketPreviousClose) * 100) / 100
+                    val sign = if(changePrice>0) "+" else if (changePrice<0) "-" else ""
                     dailyPriceChangeChart.text =
-                        "${viewModel.getUnicodeSymbolCurrency(stock.currency)}$changePrice (${
+                        "$sign${viewModel.getUnicodeSymbolCurrency(stock.currency)}${abs(changePrice)} (${
                             abs(
                                 round(stock.regularMarketChangePercent * 100) / 100
                             )
@@ -177,21 +178,18 @@ class ChartFragment : Fragment() {
     }
 
     private fun clickIntervalButton(item: TextView, allItems: Array<TextView>) {
-        item.background =
-            ResourcesCompat.getDrawable(resources, R.drawable.suggestion_shape_black, null)
-        item.setTextColor(resources.getColor(R.color.white))
-
         allItems.forEach {
-            if (it != item) {
                 it.background =
                     ResourcesCompat.getDrawable(
                         resources,
                         R.drawable.suggestion_shape,
                         null
                     )
-                it.setTextColor(resources.getColor(R.color.black))
-            }
+                it.setTextColor(ResourcesCompat.getColor(resources,R.color.black,null))
         }
+        item.background =
+            ResourcesCompat.getDrawable(resources, R.drawable.suggestion_shape_black, null)
+        item.setTextColor(ResourcesCompat.getColor(resources,R.color.white,null))
     }
 
     private fun refreshChart(seriesData: MutableList<DataEntry>, anyChartView: AnyChartView) {

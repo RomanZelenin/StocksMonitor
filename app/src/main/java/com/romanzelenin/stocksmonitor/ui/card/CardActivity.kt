@@ -3,15 +3,27 @@ package com.romanzelenin.stocksmonitor.ui.card
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayoutMediator
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.ActivityCardBinding
+import com.romanzelenin.stocksmonitor.repository.Repository
 
 class CardActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCardBinding
+
+    private val viewModel: CardActivityViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return CardActivityViewModel(Repository(this@CardActivity)) as T
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

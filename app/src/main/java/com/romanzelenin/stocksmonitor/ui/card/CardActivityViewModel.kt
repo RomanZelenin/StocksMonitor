@@ -5,7 +5,7 @@ import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.romanzelenin.stocksmonitor.model.Stock
 import com.romanzelenin.stocksmonitor.repository.Repository
 
-class ChartViewModel(private val repository: Repository) : ViewModel() {
+class CardActivityViewModel(private val repository: Repository) : ViewModel() {
 
     suspend fun getHistoricData(symbol: String, interval: String): List<ValueDataEntry>? {
         return repository.getHistoricData(symbol, interval)?.map { ValueDataEntry(it.date, it.c) }
