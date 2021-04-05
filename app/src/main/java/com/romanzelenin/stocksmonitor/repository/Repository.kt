@@ -33,12 +33,21 @@ class Repository(private val context: Context) {
 
 
     init {
-        File(context.filesDir.absolutePath + File.pathSeparator + "you_ve_search.txt").apply {
+        File(context.filesDir.absolutePath + "/you_ve_search.txt").apply {
             createNewFile()
             readLines()
                 .forEach {
                     _searchedRequests.addLast(it)
                 }
+        }
+        if (File(context.cacheDir.absolutePath + "images/").mkdirs()) {
+            context.assets.list("images")?.forEach {
+                val assetImg = context.assets.open("images/$it").readBytes()
+                val img =
+                    File(context.cacheDir.absolutePath + "/images/" + it)
+                img.writeBytes(assetImg)
+
+            }
         }
     }
 
@@ -169,7 +178,7 @@ class Repository(private val context: Context) {
 
 
     suspend fun getHistoricData(symbol: String, interval: String): List<Quote>? {
-           return remoteSource.getHistoricData(symbol, interval)
+        return remoteSource.getHistoricData(symbol, interval)
     }
 
     fun getCompanyNews(symbol: String) = liveData {
@@ -193,7 +202,7 @@ class Repository(private val context: Context) {
     }
 
     fun flushSavedRequestFromMemoryToDisk() {
-        File(context.filesDir.absolutePath + File.pathSeparator + "you_ve_search.txt").apply {
+        File(context.filesDir.absolutePath + "/you_ve_search.txt").apply {
             delete()
             val buffer = bufferedWriter()
             _searchedRequests.forEachIndexed { index, item ->

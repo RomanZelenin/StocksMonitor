@@ -28,7 +28,7 @@ abstract class MonitorStocksDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(context, MonitorStocksDatabase::class.java, "FinData.db")
-                //.createFromAsset("db/FinData.db")
+                .createFromAsset("db/FinData.db")
                 .build()
     }
 }
