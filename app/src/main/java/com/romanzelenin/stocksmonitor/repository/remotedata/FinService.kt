@@ -2,6 +2,7 @@ package com.romanzelenin.stocksmonitor.repository.remotedata
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.JsonObject
 import com.romanzelenin.stocksmonitor.model.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -14,7 +15,7 @@ import io.ktor.http.*
 import java.io.EOFException
 import java.io.File
 
-class FinService(pathToCacheDir:String) {
+class FinService(pathToCacheDir: String) {
     private val cacheImagesFolder = "images"
     private val pathToImgDir = pathToCacheDir + File.separator + cacheImagesFolder
 
@@ -29,7 +30,7 @@ class FinService(pathToCacheDir:String) {
             val quote = getQuote(item.symbol)
             return quote?.let {
                 val companyProfile = getCompanyProfile(item.symbol)
-                if (companyProfile?.name==null) return@let null
+                if (companyProfile?.name == null) return@let null
                 companyProfile?.let {
                     val logoImg =
                         File(pathToImgDir + File.separator + it.ticker + ".png")
@@ -43,8 +44,8 @@ class FinService(pathToCacheDir:String) {
                         it.ticker!!,
                         it.currency!!,
                         quote.c,
-                        quote.pc,
-                        ((quote.c / quote.pc)-1) * 100,
+                        quote.pc!!,
+                        ((quote.c / quote.pc) - 1) * 100,
                         it.name ?: "",
                         if (logoImg.exists()) logoImg.absolutePath else null,
                         false
@@ -61,7 +62,7 @@ class FinService(pathToCacheDir:String) {
     }
 
     suspend fun popularRequests(amount: Int = 10): List<String> {
-        return repeatedRequest(maxAttempt = 1, timeRepeatRequestMills = 0){
+        return repeatedRequest(maxAttempt = 1, timeRepeatRequestMills = 0) {
             client.get<List<MostWatched>>("${mboum_host}tr/trending?apikey=$mboum_token")[0].quotes
                 .take(amount)
                 .mapNotNull { getCompanyProfile(it)?.name }
@@ -69,7 +70,7 @@ class FinService(pathToCacheDir:String) {
     }
 
     suspend fun mostActiveStocks(start: Int): List<Stock>? {
-        return repeatedRequest(maxAttempt = 1, timeRepeatRequestMills = 0){
+        return repeatedRequest(maxAttempt = 1, timeRepeatRequestMills = 0) {
             val resp =
                 client.get<StockCollectionInMarket>("${mboum_host}co/collections/?list=most_actives&start=$start&apikey=$mboum_token")
             val listMostActivesStock = resp.quotes
@@ -79,13 +80,13 @@ class FinService(pathToCacheDir:String) {
                 it.imgSrc = companyProfile?.logo
                 //-------------------------------------------------------
                 val logoImg = File(pathToImgDir + File.separator + it.symbol + ".png")
-                if (!logoImg.exists() && !it.imgSrc.isNullOrEmpty()){
+                if (!logoImg.exists() && !it.imgSrc.isNullOrEmpty()) {
                     loadLogo(it.imgSrc!!)?.also { logo ->
                         logoImg.writeBytes(logo)
                     }
                     Log.d(TAG, "path to loaded logo ${logoImg.absolutePath}")
                 }
-                it.apply { it.imgSrc = if(logoImg.exists()) logoImg.absolutePath else null }
+                it.apply { it.imgSrc = if (logoImg.exists()) logoImg.absolutePath else null }
             }
         }
     }
@@ -124,7 +125,7 @@ class FinService(pathToCacheDir:String) {
                         .show()
                 }*//*
                 break
-            } */catch (e: EOFException){
+            } */ catch (e: EOFException) {
                 Log.d(TAG, e.toString())
                 break
             }
@@ -157,6 +158,32 @@ class FinService(pathToCacheDir:String) {
     private suspend fun getCompanyProfile(symbol: String): CompanyProfile? {
         return repeatedRequest(1, 0) {
             client.get<CompanyProfile>("${finhub_host}stock/profile2?symbol=${symbol}&token=$finhub_token")
+        }
+    }
+
+    enum class Interval( val interval: String){
+        MONTH("1h"),
+        FIVE_YEAR("1wk"),
+        ALL("3mo")
+    }
+
+    suspend fun getHistoricData(symbol: String, interval: String): List<Quote>? {
+        return repeatedRequest(1, 0) {
+            val resp =
+                client.get<JsonObject>("${mboum_host}hi/history/?symbol=${symbol}&interval=${interval}&diffandsplits=true&apikey=${mboum_token}")
+            val items = resp.getAsJsonObject("items")
+            items.keySet().map {
+                val jsonQuote = items[it].asJsonObject
+                val quote = Quote(
+                    jsonQuote["open"].asDouble,
+                    jsonQuote["high"].asDouble,
+                    jsonQuote["low"].asDouble,
+                    jsonQuote["close"].asDouble,
+                    jsonQuote["adjclose"]?.asDouble,
+                    jsonQuote["date"].asString
+                )
+              quote
+            }
         }
     }
 

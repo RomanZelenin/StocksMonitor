@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StocksMonitor">
         <activity
-            android:name=".CardActivity"
+            android:name=".ui.card.CardActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

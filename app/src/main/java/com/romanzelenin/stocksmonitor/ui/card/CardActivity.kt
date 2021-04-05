@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui.card
 
 import android.os.Bundle
 import android.widget.ImageButton
@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.tabs.TabLayoutMediator
+import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.ActivityCardBinding
 
 class CardActivity : AppCompatActivity() {

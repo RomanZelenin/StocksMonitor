@@ -41,7 +41,7 @@
     </fragment>
     <activity
         android:id="@+id/cardActivity"
-        android:name="com.romanzelenin.stocksmonitor.CardActivity"
+        android:name="com.romanzelenin.stocksmonitor.ui.card.CardActivity"
         android:label="activity_card"
         tools:layout="@layout/activity_card" />
 </navigation>

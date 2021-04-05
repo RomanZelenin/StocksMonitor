@@ -5,5 +5,6 @@ data class Quote(
     val h:Double,
     val l:Double,
     val c:Double,
-    val pc:Double
+    val pc:Double? = null,
+    val date:String? = null
 )

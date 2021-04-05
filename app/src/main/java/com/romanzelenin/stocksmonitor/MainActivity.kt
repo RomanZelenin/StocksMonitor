@@ -2,6 +2,7 @@ package com.romanzelenin.stocksmonitor
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.romanzelenin.stocksmonitor.databinding.ActivityMainBinding
 import com.romanzelenin.stocksmonitor.repository.Repository
+import com.romanzelenin.stocksmonitor.repository.remotedata.FinService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -120,7 +122,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.pager_collection) {
                 binding.appBarSearch.apply {
@@ -148,6 +149,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
 
     private fun postAndSaveQuery(query: String) {

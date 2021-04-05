@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor
+package com.romanzelenin.stocksmonitor.ui.card
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter

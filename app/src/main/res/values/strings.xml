@@ -15,6 +15,12 @@
     <string name="chart">Chart</string>
     <string name="summary">Summary</string>
     <string name="news">News</string>
+    <string name="day">D</string>
+    <string name="week">W</string>
+    <string name="month">M</string>
+    <string name="six_month">6M</string>
+    <string name="year">Y</string>
+    <string name="all">All</string>
     <string-array name="countryToCurrency">
         <item>AUD,\u24</item>
         <item>ANG,\u192</item>
