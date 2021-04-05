@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -118,47 +119,23 @@ class ChartFragment : Fragment() {
 
             day.setOnClickListener {
                 clickIntervalButton(it as TextView, items)
-
-
-             /*   lifecycleScope.launch {
-                    val seriesData = mutableListOf<DataEntry>()
-                    val historicData = viewModel.getHistoricData(
-                        requireActivity().intent.getStringExtra("ticker_name")!!,
-                        "1h"
-                    )
-                    val firstDate = historicData?.lastOrNull()?.getValue("x")
-                    val dataAllDay =
-                        historicData?.takeLastWhile { it.getValue("x").equals(firstDate) }
-                    Log.d("!!date", dataAllDay?.size?.toString() ?: "NULL")
-                    dataAllDay?.forEach {
-                        Log.d("!!date___", it.getValue("value").toString())
-                        seriesData.add(it)
-                    }
-                    refreshChart(seriesData, binding.anyChartView)
-                }*/
-
+                Toast.makeText(context, "Not yet implemented(Only All)", Toast.LENGTH_SHORT).show()
             }
             week.setOnClickListener {
                 clickIntervalButton(it as TextView, items)
+                Toast.makeText(context, "Not yet implemented(Only All)", Toast.LENGTH_SHORT).show()
             }
             month.setOnClickListener {
                 clickIntervalButton(it as TextView, items)
-
-            /*    lifecycleScope.launch {
-                    val seriesData = mutableListOf<DataEntry>()
-                    viewModel.getHistoricData(
-                        requireActivity().intent.getStringExtra("ticker_name")!!,
-                        "5m"
-                    )?.forEach { seriesData.add(it) }
-
-                    refreshChart(seriesData, binding.anyChartView)
-                }*/
+                Toast.makeText(context, "Not yet implemented(Only All)", Toast.LENGTH_SHORT).show()
             }
             year.setOnClickListener {
                 clickIntervalButton(it as TextView, items)
+                Toast.makeText(context, "Not yet implemented(Only All)", Toast.LENGTH_SHORT).show()
             }
             sixMonth.setOnClickListener {
                 clickIntervalButton(it as TextView, items)
+                Toast.makeText(context, "Not yet implemented(Only All)", Toast.LENGTH_SHORT).show()
             }
             all.setOnClickListener {
                 clickIntervalButton(it as TextView, items)
@@ -168,7 +145,6 @@ class ChartFragment : Fragment() {
                         requireActivity().intent.getStringExtra("ticker_name")!!,
                         "1wk"
                     )?.forEach { seriesData.add(it) }
-
                     refreshChart(seriesData, binding.anyChartView)
                 }
             }
@@ -205,7 +181,7 @@ class ChartFragment : Fragment() {
         set.mapAs("{ x: 'x', value: 'value' }")
 
         val series1 = areaChart.splineArea(set, "")
-        //series1.name("Americas")
+        series1.name("Price")
         series1.stroke("2 black")
             .fill(
                 LinearGradientFill(

@@ -55,11 +55,9 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
-    implementation 'com.squareup.picasso:picasso:2.6.0-SNAPSHOT'
+    implementation 'com.squareup.picasso:picasso:2.8'
 
     implementation 'jp.wasabeef:picasso-transformations:2.4.0'
-    // If you want to use the GPU Filters
-//    implementation 'jp.co.cyberagent.android:gpuimage:2.1.0
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"

@@ -11,10 +11,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.romanzelenin.stocksmonitor.R
-import com.romanzelenin.stocksmonitor.repository.remotedata.StocksRemoteMediator
+import com.romanzelenin.stocksmonitor.model.*
 import com.romanzelenin.stocksmonitor.repository.localdata.MonitorStocksDatabase
 import com.romanzelenin.stocksmonitor.repository.remotedata.FinService
-import com.romanzelenin.stocksmonitor.model.*
+import com.romanzelenin.stocksmonitor.repository.remotedata.StocksRemoteMediator
 import io.ktor.client.features.*
 import io.ktor.util.network.*
 import java.io.File
@@ -43,22 +43,22 @@ class Repository(private val context: Context) {
     }
 
     val popularRequests = liveData(timeoutInMs = 500) {
-            localSource.getPopularRequestDao()
-                .getAll().map { it.map { it.name } }.let { popularRequests ->
-                    emitSource(popularRequests)
-                }
-            try {
-                remoteSource.popularRequests().map { PopularRequest(it) }.let { popularRequests ->
-                    localSource.withTransaction {
-                        localSource.getPopularRequestDao().clear()
-                        localSource.getPopularRequestDao().insertAll(popularRequests)
-                    }
-                }
-            } catch (e: UnresolvedAddressException) {
-                Log.d(TAG, e.toString())
-            }catch (e: ClientRequestException) {
-                Log.d(TAG, e.toString())
+        localSource.getPopularRequestDao()
+            .getAll().map { it.map { it.name } }.let { popularRequests ->
+                emitSource(popularRequests)
             }
+        try {
+            remoteSource.popularRequests().map { PopularRequest(it) }.let { popularRequests ->
+                localSource.withTransaction {
+                    localSource.getPopularRequestDao().clear()
+                    localSource.getPopularRequestDao().insertAll(popularRequests)
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            Log.d(TAG, e.toString())
+        } catch (e: ClientRequestException) {
+            Log.d(TAG, e.toString())
+        }
     }
 
     val countryToCurrency = lazy {
@@ -150,7 +150,7 @@ class Repository(private val context: Context) {
         return localSource.stockDao().getCountTrendingStock()
     }
 
-   suspend fun countSearchStockResult(query: String):Int{
+    suspend fun countSearchStockResult(query: String): Int {
         return localSource.stockDao().getCountSearchStockResult(query)
     }
 
@@ -168,23 +168,27 @@ class Repository(private val context: Context) {
     }
 
 
-   suspend fun getHistoricData(symbol: String, interval: String): List<Quote>? {
-      return remoteSource.getHistoricData(symbol, interval)
-   }
+    suspend fun getHistoricData(symbol: String, interval: String): List<Quote>? {
+           return remoteSource.getHistoricData(symbol, interval)
+    }
 
     fun getCompanyNews(symbol: String) = liveData {
         emitSource(localSource.getCompanyNewsDao().getCompanyNews(symbol))
-        remoteSource.getCompanyNews(symbol)?.let {
-            it.forEach {
-                it.symbol = symbol
-                val sdf = SimpleDateFormat("YYYY-MM-dd", Locale.getDefault())
-                it.datetime = sdf.format(Date(it.datetime.toLong() * 1000))
-                it
+        try {
+            remoteSource.getCompanyNews(symbol)?.let {
+                it.forEach {
+                    it.symbol = symbol
+                    val sdf = SimpleDateFormat("YYYY-MM-dd", Locale.getDefault())
+                    it.datetime = sdf.format(Date(it.datetime.toLong() * 1000))
+                    it
+                }
+                localSource.withTransaction {
+                    localSource.getCompanyNewsDao().clear(symbol)
+                    localSource.getCompanyNewsDao().insert(it)
+                }
             }
-            localSource.withTransaction {
-                localSource.getCompanyNewsDao().clear(symbol)
-                localSource.getCompanyNewsDao().insert(it)
-            }
+        } catch (e: UnresolvedAddressException) {
+            Log.d(TAG, e.toString())
         }
     }
 

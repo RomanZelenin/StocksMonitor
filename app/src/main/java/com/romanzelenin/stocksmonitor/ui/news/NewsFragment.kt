@@ -8,14 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.romanzelenin.stocksmonitor.databinding.FragmentNewsListBinding
 import com.romanzelenin.stocksmonitor.repository.Repository
 import com.romanzelenin.stocksmonitor.ui.card.CardActivityViewModel
-import kotlinx.coroutines.launch
 
 
 class NewsFragment : Fragment() {
@@ -46,17 +42,17 @@ class NewsFragment : Fragment() {
     ): View? {
         binding = FragmentNewsListBinding.inflate(inflater, container, false)
         binding.list.layoutManager = LinearLayoutManager(context)
+
         viewModel.getNewsCompany(requireActivity().intent.getStringExtra("ticker_name")!!)
             .observe(viewLifecycleOwner) {
                 val newsAdapter = NewsItemRecyclerViewAdapter(it)
                 binding.list.adapter = newsAdapter
             }
-
         return binding.root
     }
 
     companion object {
-
+        private val TAG = NewsFragment::class.java.simpleName
         const val ARG_COLUMN_COUNT = "column-count"
 
         @JvmStatic

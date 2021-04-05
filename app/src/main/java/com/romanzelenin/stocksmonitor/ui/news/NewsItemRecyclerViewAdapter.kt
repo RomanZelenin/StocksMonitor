@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.romanzelenin.stocksmonitor.R
@@ -31,16 +32,24 @@ class NewsItemRecyclerViewAdapter(
 
         holder.apply {
             headline.text = item.headline
-            Picasso.get().load(item.image)
-                .transform(ColorFilterTransformation(itemView.context.getColor(R.color.black_transparent)))
-                .transform(BlurTransformation(itemView.context))
-                .into(image)
+            if (item.image.isNotEmpty()) {
+                Picasso.get().load(item.image)
+                    .resize(700, 400)
+                    .error(R.drawable.news_placeholder)
+                    .placeholder(R.drawable.news_placeholder)
+                    .onlyScaleDown()
+                    .transform(ColorFilterTransformation(itemView.context.getColor(R.color.black_transparent)))
+                    .transform(BlurTransformation(itemView.context))
+                    .into(image)
+            }else{
+                image.setImageDrawable(ContextCompat.getDrawable(image.context,R.drawable.news_placeholder))
+            }
             source.text = item.source
             datetime.text = item.datetime
             summary.text = item.summary
             itemView.setOnClickListener {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
-                startActivity(it.context,browserIntent, null)
+                startActivity(it.context, browserIntent, null)
             }
         }
     }
