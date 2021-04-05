@@ -66,13 +66,10 @@ class CardActivity : AppCompatActivity() {
             TabLayoutMediator(tabLayout, pager) { tab, position ->
                 when (position) {
                     0 -> {
-                        tab.text = "Chart"
-                    }
-                    1 -> {
-                        tab.text = "Summary"
+                        tab.text = resources.getString(R.string.chart)
                     }
                     else -> {
-                        tab.text = "News"
+                        tab.text = resources.getString(R.string.news_week)
                     }
                 }
 

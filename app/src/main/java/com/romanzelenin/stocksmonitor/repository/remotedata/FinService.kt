@@ -14,6 +14,8 @@ import io.ktor.client.utils.*
 import io.ktor.http.*
 import java.io.EOFException
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class FinService(pathToCacheDir: String) {
     private val cacheImagesFolder = "images"
@@ -161,12 +163,6 @@ class FinService(pathToCacheDir: String) {
         }
     }
 
-    enum class Interval( val interval: String){
-        MONTH("1h"),
-        FIVE_YEAR("1wk"),
-        ALL("3mo")
-    }
-
     suspend fun getHistoricData(symbol: String, interval: String): List<Quote>? {
         return repeatedRequest(1, 0) {
             val resp =
@@ -182,8 +178,22 @@ class FinService(pathToCacheDir: String) {
                     jsonQuote["adjclose"]?.asDouble,
                     jsonQuote["date"].asString
                 )
-              quote
+                quote
             }
+        }
+    }
+
+    suspend fun getCompanyNews(symbol: String): List<CompanyNews>? {
+        return repeatedRequest(1, 0) {
+            val sdf = SimpleDateFormat("YYYY-MM-dd", Locale.getDefault())
+            val c = Calendar.getInstance()
+            val date = Date()
+            c.time = date
+            val i = c[Calendar.DAY_OF_WEEK] - c.firstDayOfWeek
+            c.add(Calendar.DATE, -i - 7)
+            val currentDate = sdf.format(date)
+            val pastWeekDate = sdf.format(c.time)
+            client.get<List<CompanyNews>>("${finhub_host}company-news?symbol=$symbol&from=$pastWeekDate&to=$currentDate&token=$finhub_token")
         }
     }
 

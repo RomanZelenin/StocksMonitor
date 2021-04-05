@@ -169,6 +169,10 @@ class Repository(private val context: Context) {
       return remoteSource.getHistoricData(symbol, interval)
    }
 
+    suspend fun getCompanyNews(symbol: String): List<CompanyNews>? {
+        return remoteSource.getCompanyNews(symbol)
+    }
+
     fun flushSavedRequestFromMemoryToDisk() {
         File(context.filesDir.absolutePath + File.pathSeparator + "you_ve_search.txt").apply {
             delete()

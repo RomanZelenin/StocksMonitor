@@ -21,6 +21,7 @@
     <string name="six_month">6M</string>
     <string name="year">Y</string>
     <string name="all">All</string>
+    <string name="news_week">News of the week</string>
     <string-array name="countryToCurrency">
         <item>AUD,\u24</item>
         <item>ANG,\u192</item>

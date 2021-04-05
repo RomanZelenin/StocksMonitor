@@ -1,4 +1,4 @@
-package com.romanzelenin.stocksmonitor.ui.card
+package com.romanzelenin.stocksmonitor.ui.chart
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -24,6 +24,7 @@ import com.anychart.graphics.vector.LinearGradientFill
 import com.romanzelenin.stocksmonitor.R
 import com.romanzelenin.stocksmonitor.databinding.ChartFragmentBinding
 import com.romanzelenin.stocksmonitor.repository.Repository
+import com.romanzelenin.stocksmonitor.ui.card.CardActivityViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.round
