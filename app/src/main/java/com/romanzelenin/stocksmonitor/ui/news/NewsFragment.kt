@@ -45,25 +45,14 @@ class NewsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentNewsListBinding.inflate(inflater, container, false)
-        val view = binding.root
-
-        lifecycleScope.launch {
-            val news =
-                viewModel.getNewsCompany(requireActivity().intent.getStringExtra("ticker_name")!!)
-            val newsAdapter = NewsItemRecyclerViewAdapter(news ?: emptyList())
-            // Set the adapter
-            if (view is RecyclerView) {
-                with(view) {
-                    layoutManager = when {
-                        columnCount <= 1 -> LinearLayoutManager(context)
-                        else -> GridLayoutManager(context, columnCount)
-                    }
-                    adapter = newsAdapter
-                }
+        binding.list.layoutManager = LinearLayoutManager(context)
+        viewModel.getNewsCompany(requireActivity().intent.getStringExtra("ticker_name")!!)
+            .observe(viewLifecycleOwner) {
+                val newsAdapter = NewsItemRecyclerViewAdapter(it)
+                binding.list.adapter = newsAdapter
             }
-        }
 
-        return view
+        return binding.root
     }
 
     companion object {

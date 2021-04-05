@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.romanzelenin.stocksmonitor.model.*
 
-@Database(entities = [Stock::class, RemoteKey::class, TrendingStock::class, FavouriteStock::class, PopularRequest::class], version = 1)
+@Database(entities = [Stock::class, RemoteKey::class, TrendingStock::class, FavouriteStock::class, PopularRequest::class, CompanyNews::class], version = 1)
 abstract class MonitorStocksDatabase : RoomDatabase() {
 
     abstract fun stockDao(): StockDao
@@ -14,6 +14,8 @@ abstract class MonitorStocksDatabase : RoomDatabase() {
     abstract fun getRemoteKeyDao(): RemoteKeyDao
 
     abstract fun getPopularRequestDao(): PopularRequestDao
+
+    abstract fun getCompanyNewsDao(): CompanyNewsDao
 
     companion object {
 

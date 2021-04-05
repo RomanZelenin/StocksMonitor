@@ -2,11 +2,8 @@ package com.romanzelenin.stocksmonitor.ui.card
 
 import androidx.lifecycle.ViewModel
 import com.anychart.chart.common.dataentry.ValueDataEntry
-import com.romanzelenin.stocksmonitor.model.CompanyNews
 import com.romanzelenin.stocksmonitor.model.Stock
 import com.romanzelenin.stocksmonitor.repository.Repository
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CardActivityViewModel(private val repository: Repository) : ViewModel() {
 
@@ -22,12 +19,8 @@ class CardActivityViewModel(private val repository: Repository) : ViewModel() {
         return repository.countryToCurrency.value[currency]
     }
 
-    suspend fun getNewsCompany(symbol: String): List<CompanyNews>? {
-        return repository.getCompanyNews(symbol)?.map {
-            val sdf = SimpleDateFormat("YYYY-MM-dd", Locale.getDefault())
-            it.datetime = sdf.format(Date(it.datetime.toLong() * 1000))
-            it
-        }
-    }
+    fun getNewsCompany(symbol: String) =
+        repository.getCompanyNews(symbol)
+
 
 }

@@ -18,6 +18,9 @@ import com.romanzelenin.stocksmonitor.model.*
 import io.ktor.client.features.*
 import io.ktor.util.network.*
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayDeque
 import kotlin.collections.set
 
 class Repository(private val context: Context) {
@@ -169,8 +172,20 @@ class Repository(private val context: Context) {
       return remoteSource.getHistoricData(symbol, interval)
    }
 
-    suspend fun getCompanyNews(symbol: String): List<CompanyNews>? {
-        return remoteSource.getCompanyNews(symbol)
+    fun getCompanyNews(symbol: String) = liveData {
+        emitSource(localSource.getCompanyNewsDao().getCompanyNews(symbol))
+        remoteSource.getCompanyNews(symbol)?.let {
+            it.forEach {
+                it.symbol = symbol
+                val sdf = SimpleDateFormat("YYYY-MM-dd", Locale.getDefault())
+                it.datetime = sdf.format(Date(it.datetime.toLong() * 1000))
+                it
+            }
+            localSource.withTransaction {
+                localSource.getCompanyNewsDao().clear(symbol)
+                localSource.getCompanyNewsDao().insert(it)
+            }
+        }
     }
 
     fun flushSavedRequestFromMemoryToDisk() {
